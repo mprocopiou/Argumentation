@@ -1,0 +1,53 @@
+<document>
+<solution>1</solution>
+<def>[a]</def>
+<cul>[c]</cul>
+<arguments><argument><number>1</number>
+<Sm>[a]</Sm>
+<Su>[]</Su>
+<Cl>p</Cl>
+</argument>
+<argument><number>6</number>
+<Sm>[c]</Sm>
+<Su>[]</Su>
+<Cl>q</Cl>
+</argument>
+<argument><number>7</number>
+<Sm>[a]</Sm>
+<Su>[]</Su>
+<Cl>u</Cl>
+</argument>
+<argument><number>8</number>
+<Sm>[c]</Sm>
+<Su>[d]</Su>
+<Cl>q</Cl>
+</argument>
+<argument><number>9</number>
+<Sm>[c]</Sm>
+<Su>[e]</Su>
+<Cl>q</Cl>
+</argument>
+</arguments>
+<attacks>
+<attack>
+	<from>1</from>
+	<to>0</to>
+</attack>
+<attack>
+	<from>6</from>
+	<to>1</to>
+</attack>
+<attack>
+	<from>7</from>
+	<to>6</to>
+</attack>
+<attack>
+	<from>8</from>
+	<to>1</to>
+</attack>
+<attack>
+	<from>9</from>
+	<to>1</to>
+</attack>
+</attacks>
+</document>
