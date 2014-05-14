@@ -1,0 +1,88 @@
+digraph G {
+ 
+ ratio="fill";
+ compound="true";
+ ranksep="1";
+ rankdir="LR";
+ bgcolor="#FFFFFF";
+ node [style="filled",shape="box",height="0.4",width="0.6",margin="0.1,0.1"];
+
+ subgraph cluster0 {
+  label = "P:1";
+  edge [color="#000000"];
+  labeljust="l";
+  pencolor="#444444";
+  style="filled";
+  color="#A2DDF3";
+  s0_0 [label="p",fillcolor="#222222",color="#222222",fontcolor="white"];
+  s0_1 [label="a",fillcolor="#117711",color="#117711",fontcolor="white"];
+  s0_1 -> s0_0;
+ }
+
+ edge [color="#BB2222"];
+
+ subgraph cluster1 {
+  label = "O:6";
+  edge [color="#000000"];
+  labeljust="l";
+  pencolor="#444444";
+  style="filled";
+  color="#CCCCCC";
+  s1_0 [label="q",fillcolor="#777777",color="#000000",fontcolor="#FFFFFF"];
+  s1_1 [label="c",fillcolor="#CC9922",color="#000000",fontcolor="#FFFFFF"];
+  s1_1 -> s1_0;
+ }
+
+ edge [color="#BB2222"];
+ s1_0 -> s0_1;
+
+ subgraph cluster2 {
+  label = "P:7";
+  edge [color="#000000"];
+  labeljust="l";
+  pencolor="#444444";
+  style="filled";
+  color="#A2DDF3";
+  s2_0 [label="u",fillcolor="#222222",color="#222222",fontcolor="white"];
+  s2_1 [label="a",fillcolor="#117711",color="#117711",fontcolor="white"];
+  s2_1 -> s2_0;
+ }
+
+ edge [color="#BB2222"];
+ s2_0 -> s1_1;
+
+ subgraph cluster3 {
+  label = "O:8";
+  edge [color="#000000"];
+  labeljust="l";
+  pencolor="#444444";
+  style="filled";
+  color="#FFFFFF";
+  s3_0 [label="q",fillcolor="#777777",color="#000000",fontcolor="#FFFFFF"];
+  s3_1 [label="c",fillcolor="#CC9922",color="#000000",fontcolor="#FFFFFF"];
+  s3_1 -> s3_0;
+  s3_2 [label="d",fillcolor="#77BB77",color="#77BB77",fontcolor="#000000"];
+  s3_2 -> s3_0;
+ }
+
+ edge [color="#BB2222"];
+ s3_0 -> s0_1;
+
+ subgraph cluster4 {
+  label = "O:9";
+  edge [color="#000000"];
+  labeljust="l";
+  pencolor="#444444";
+  style="filled";
+  color="#FFFFFF";
+  s4_0 [label="q",fillcolor="#777777",color="#000000",fontcolor="#FFFFFF"];
+  s4_1 [label="c",fillcolor="#CC9922",color="#000000",fontcolor="#FFFFFF"];
+  s4_1 -> s4_0;
+  s4_2 [label="e",fillcolor="#77BB77",color="#77BB77",fontcolor="#000000"];
+  s4_2 -> s4_0;
+ }
+
+ edge [color="#BB2222"];
+ s4_0 -> s0_1;
+
+}

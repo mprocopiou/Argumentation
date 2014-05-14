@@ -1,0 +1,77 @@
+<solution> 
+<node>
+<id>s0_0</id>
+ <name>p</name>
+</node>
+<node>
+<id>s0_1</id>
+ <name>a</name>
+</node>
+<attack>s0_1 -> s0_0</attack>
+ }
+
+ edge [color="#BB2222"];
+<node>
+<id>s1_0</id>
+<name>q</name>
+</node>
+<node>
+<id>s1_1</id>
+<name>c</name>
+</node>
+<attack>s1_1 -> s1_0</attack>
+ }
+
+ edge [color="#BB2222"];
+<attack>s1_0 -> s0_1</attack>
+<node>
+<id>s2_0</id>
+ <name>u</name>
+</node>
+<node>
+<id>s2_1</id>
+ <name>a</name>
+</node>
+<attack>s2_1 -> s2_0</attack>
+ }
+
+ edge [color="#BB2222"];
+<attack>s2_0 -> s1_1</attack>
+<node>
+<id>s3_0</id>
+<name>q</name>
+</node>
+<node>
+<id>s3_1</id>
+<name>c</name>
+</node>
+<attack>s3_1 -> s3_0</attack>
+<node>
+<id>s3_2</id>
+<name>d</name>
+</node>
+<attack>s3_2 -> s3_0</attack>
+ }
+
+ edge [color="#BB2222"];
+<attack>s3_0 -> s0_1</attack>
+<node>
+<id>s4_0</id>
+<name>q</name>
+</node>
+<node>
+<id>s4_1</id>
+<name>c</name>
+</node>
+<attack>s4_1 -> s4_0</attack>
+<node>
+<id>s4_2</id>
+<name>e</name>
+</node>
+<attack>s4_2 -> s4_0</attack>
+ }
+
+ edge [color="#BB2222"];
+<attack>s4_0 -> s0_1</attack>
+
+}

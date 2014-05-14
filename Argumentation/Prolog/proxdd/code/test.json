@@ -1,0 +1,16 @@
+{
+	"defs":[
+		{"name":"a"}
+	],
+	"culs":[
+		{"name":"c"}
+	],
+	"arguments":[
+		{"number":1,"Sm":"a","Su":"X","Cl":"p"},
+		{"number":6,"Sm":"c","Su":"X","Cl":"q"}
+	],
+	"attacks":[
+		{"from":1,"to":0},
+		{"from":6,"to":1}
+	]
+}

@@ -9,6 +9,7 @@ using System.Threading;
 using SbsSW.SwiPlCs;
 using System.Diagnostics;
 using System.Xml.Linq;
+using System.Collections.Specialized;
 
 
 namespace Argumentation
@@ -37,21 +38,69 @@ namespace Argumentation
 
         protected void build_graph()
         {
-            XDocument document = XDocument.Load(@"C:\Users\michael\Desktop\ABAscripts\proxdd\data\test2.xml");
-            IEnumerable<Node> arguments = from a in document.Descendants("node")
-                                              select new Node()
-                                              {
-                                                  id = a.Element("id").Value,
-                                                  name = a.Element("name").Value,
-                                                  type = a.Element("type").Value,
-                                                  action = a.Element("action").Value,
-                                              };
-            IEnumerable<Attack> attacks = from att in document.Descendants("attack")
-                                          select new Attack()
-                                          {
-                                              source = att.Element("source").Value,
-                                              target = att.Element("target").Value,
-                                          };
+            List<String> solutions = (List<String>)Session["Result"];
+            string[] qstring = Request.QueryString["engine"].Split(';');
+            string engine = qstring[0];
+            //string outputXml = qstring[1] + ".xml";
+            string loadFile = "";
+            string dir = Server.MapPath(@"~\Prolog");
+            //if (engine=="1")
+            //    loadFile = dir + @"\proxdd\data\" + outputXml;
+            //else if (engine=="2")
+            //    loadFile = dir + @"\grapharg\data\" + outputXml;
+
+
+            //deleteFile(loadFile);
+            //TODO Multiple Solutions.
+            List<String> parsedSol = parseSolution(solutions[0]);
+
+            List<Node> arguments = new List<Node>();
+            List<Attack> attacks = new List<Attack>();
+
+            foreach (var elem in parsedSol)
+            {
+                string[] splitelem = elem.Split('(');
+                string head = splitelem[0];
+                string details = splitelem[1].TrimEnd(')');
+
+                List<String> parsedDetails = parseDetails(details);
+
+                if (head == "node")
+                {
+                    Node node = new Node
+                    {
+                        id = parsedDetails[0],
+                        name = parsedDetails[1],
+                        type = parsedDetails[2],
+                        action = parsedDetails[3],
+                    };
+                    arguments.Add(node);          
+                }
+                else if (head == "attack")
+                {
+                    Attack attack = new Attack()
+                    {
+                        source = parsedDetails[0],
+                        target = parsedDetails[1],
+                    };
+                    attacks.Add(attack);
+                }
+            }
+            //XDocument document = XDocument.Load(loadFile);
+            //IEnumerable<Node> arguments = from a in document.Descendants("node")
+            //                                  select new Node()
+            //                                  {
+            //                                      id = a.Element("id").Value,
+            //                                      name = a.Element("name").Value,
+            //                                      type = a.Element("type").Value,
+            //                                      action = a.Element("action").Value,
+            //                                  };
+            //IEnumerable<Attack> attacks = from att in document.Descendants("attack")
+            //                              select new Attack()
+            //                              {
+            //                                  source = att.Element("source").Value,
+            //                                  target = att.Element("target").Value,
+            //                              };
             string nodesString = "";
             foreach (Node argument in arguments)
             {
@@ -59,7 +108,7 @@ namespace Argumentation
                 int colour = 0;
                 if (argument.action == "support") { colour = 1; }
                 else if (argument.action == "attack") { colour = 2;}
-                if (argument.id == "s0_0") { colour = 3; }
+                if (argument.action == "claim") { colour = 3; }
                 nodesString = nodesString + String.Format("{{\"id\":\"{0}\",\"name\":\"{1}\",\"shape\":{2},\"group\":{3}}},",
                                                             argument.id, argument.name, shape, colour);
                 //nodesString = nodesString + String.Format("{{\"number\":\"{0}\",);
@@ -85,6 +134,92 @@ namespace Argumentation
             string json = String.Format("{{ \"nodes\":[{0}],\"links\":[{1}]}}", nodesString, linksString);
             jsonstream.Value = json;
 
+        }
+
+        private List<string> parseDetails(string details)
+        {
+            List<string> parsedDetails = new List<string>();
+            int index = 0;
+            string currStr = "";
+            foreach (char c in details)
+            {
+                string character = c.ToString();
+                if (character == "," && index == 0)
+                {
+                    string finishedStr = currStr.ToString();
+                    parsedDetails.Add(finishedStr);
+                    currStr = "";
+                }
+                else if (character == "(")
+                {
+                    currStr = currStr + character;
+                    index++;
+                }
+                else if (character == ")")
+                {
+                    currStr = currStr + character;
+                    index--;
+                }
+                else
+                {
+                    currStr = currStr + character;
+                }
+            }
+            string finalStr = currStr.ToString();
+            parsedDetails.Add(finalStr);
+            return parsedDetails;
+        }
+
+        private List<string> parseSolution(string solutionStr)
+        {
+            solutionStr = solutionStr.Trim('[',']');
+            List<String> parsedStr = new List<string>();
+            char[] charList = solutionStr.ToCharArray();
+            int index = 0;
+            string currString = "";
+            foreach (char c in solutionStr)
+            {
+                string character = c.ToString();
+                if (character == ")")
+                {
+                    index--;
+                    currString = currString + character;
+                    if (index == 0) {
+                        String finishedStr = currString.ToString();
+                        parsedStr.Add(finishedStr.ToString());
+                        currString = "";
+                    }
+                }
+                else if (character == "," && index == 0)
+                {
+                    //Skip
+                }
+                else if (character == "(")
+                {
+                    index++;
+                    currString = currString + character;
+                }
+                else
+                {
+                    currString = currString + character;
+                }
+            }
+            return parsedStr;
+        }
+
+        private void deleteFile(string file)
+        {
+            // Delete xml files.
+            if ((System.IO.File.Exists(file)))
+            {
+                System.IO.File.Delete(file);
+            }
+            // Delete pl files.
+            file = file.Replace(".xml", ".pl");
+            if ((System.IO.File.Exists(file)))
+            {
+                System.IO.File.Delete(file);
+            }
         }
     }
 }

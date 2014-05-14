@@ -44,7 +44,15 @@
 
         var svg = d3.select("body").append("svg")
             .attr("width", width)
-            .attr("height", height);
+            .attr("height", height)
+            .append("g")
+            .call(d3.behavior.zoom().scaleExtent([1, 8]).on("zoom", zoom))
+            .append("g");
+
+         svg.append('svg:rect')
+            .attr('width', width)
+            .attr('height', height)
+            .attr('fill', 'white');
 
         var nodesData = [<%= nodesSet.Value %>];
         var linksData = [<%= linksSet.Value %>];
@@ -73,7 +81,7 @@
                 .text(function (d) { return d.name; });
 
             force.on("tick", tick);
-            
+
             function tick(e) {
 
                 var k = 6 * e.alpha;
@@ -93,6 +101,9 @@
             }
         });
 
+        function zoom() {
+            svg.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+        }
 </script>
     <form id="form1" runat="server">
          <asp:HiddenField runat="server" ID="jsonstream"/>     
