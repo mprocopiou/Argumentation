@@ -70,8 +70,12 @@ namespace Argumentation
 
           //  System.IO.File.WriteAllText(engineOutput, framework.Text);
 
+            // TODO adding the ParserGrounder.
+            //string testingParser = "asm(aasdd,b){X=1,2;}.t(X) <- [p(X),aasdd(X)]. p(X)<- [r(X)]. s(X) <- [r(X)].p(X)<-[r(X),t(X)].r(X) <-[aasdd(X)].";
+            string testingParser = framework.Text;
+            string testOutput = Parser.Parser.startParsing(testingParser);
             // TODO might need to change these when grounder is added.
-            string termString = System.Text.RegularExpressions.Regex.Replace(framework.Text, @"\s", "");
+            string termString = System.Text.RegularExpressions.Regex.Replace(testOutput, @"\s", "");
             string termList = termString.Replace('.', ',');
             termList = "[" + termList.TrimEnd(',') + "]";
 

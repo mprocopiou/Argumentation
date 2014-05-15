@@ -59,7 +59,7 @@ namespace Argumentation
 
             foreach (var elem in parsedSol)
             {
-                string[] splitelem = elem.Split('(');
+                string[] splitelem = elem.Split(new char[] {'('},2);
                 string head = splitelem[0];
                 string details = splitelem[1].TrimEnd(')');
 
