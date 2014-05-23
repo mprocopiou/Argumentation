@@ -63,7 +63,7 @@
 %
 % TOP-LEVEL
 
-sxdd(S, Result) :-
+sxdd(S, Result, Output) :-
  (
   assumption(S)
   -> D0 = [S]
@@ -77,7 +77,7 @@ sxdd(S, Result) :-
  retractall(sols(_)),
  assert(sols(1)),
  derivation([[[1,[],[S],S]-0],[],D0,[],[],[],[]], 1, 2, Result),
- show_print_result(Result),
+ show_print_result(Result, Output),
  incr_sols.
 
 sxdd_all(S) :-
@@ -676,6 +676,15 @@ preloading_specific :-
  assert(rule_counter(1)).
 
 % generic
+
+loads(Input) :-
+	preloading,	
+	assert(filestem(test)),
+	repeat, 
+		member(X, Input),
+		(last(Input, X) -> !; process_fail(X)), 
+	(process_fail(X); true),
+	postloading.
 
 loadf(FileStem) :-
  preloading,

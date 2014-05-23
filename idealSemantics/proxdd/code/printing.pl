@@ -66,17 +66,17 @@ show_basic_arg([L,Sm,Su,Cl]) :-
 %
 % SHOWING: SOLUTIONS
 
-show_print_result(Solution) :-
+show_print_result([D,C,Args,Att,F], Output) :-
  option(print_solution, Print),
  (
   Print
-  -> print_solution(Solution)
-  ;  true
+  -> print_solution([D,C,Args,Att], Output)
+  ;  Output = []
  ),
  option(show_solution, Show),
  (
   Show
-  -> show_solution(Solution)
+  -> show_solution([D,C,Args,Att,F])
   ;  true
  ).
 
@@ -103,7 +103,7 @@ graph_colour(background,                        '#FFFFFF').
 graph_colour(proponent_arg,                     '#A2DDF3').
 graph_colour(proponent_asm_toBeProved,          '<type>Asm</type><action>claim</action>').
 graph_colour(proponent_asm,                     '<type>Asm</type><action>support</action>').
-graph_colour(proponent_nonAsm_toBeProved,       '<type>noAsm</type><action>claim</action>').
+graph_colour(proponent_nonAsm_toBeProved,       '<type>nonAsm</type><action>claim</action>').
 graph_colour(proponent_nonAsm,                  '<type>nonAsm</type><action>argument</action>').
 
 graph_colour(opponent_finished_arg,             '#CCCCCC').
@@ -134,10 +134,10 @@ graph_colour(attack_edge,                       '#BB2222').
 
 %%
 
-print_solution(Solution) :-
+print_solution(Solution, Output) :-
  dot_filename(FileName),
  open(FileName, write, Fd),
- print_dot_file(Solution, Fd),
+ print_dot_file(Solution, Fd, Output),
  close(Fd).
 
 dot_filename(DirAndFileName) :-
@@ -152,16 +152,16 @@ dot_filename(DirAndFileName) :-
  atom_concat(NumberedFile, '.xml', FileName),
  atom_concat(Dir, FileName, DirAndFileName).
 
-print_dot_file([D,C,Args,Att], Fd) :-
+print_dot_file([D,C,Args,Att], Fd, Output) :-
  dot_preliminaries(Fd),
- print_dot_args(Args, 0, D, C, Att, [], Fd),
+ print_dot_args(Args, 0, D, C, Att, [], Fd, Output),
   format(Fd, '~n</solution> ~n', []).
 
 dot_preliminaries(Fd) :-
   format(Fd, '<solution> ~n', []).
 
-print_dot_args([], _, _, _, _, _, _).
-print_dot_args([[L,Sm,Su,Cl]|Args], ClusterN, D, C, Att, ArgTurns, Fd) :-
+print_dot_args([], _, _, _, _, _, _, []).
+print_dot_args([[L,Sm,Su,Cl]|Args], ClusterN, D, C, Att, ArgTurns, Fd, Output) :-
  (
   L = 1
   -> Player = proponent
@@ -169,23 +169,12 @@ print_dot_args([[L,Sm,Su,Cl]|Args], ClusterN, D, C, Att, ArgTurns, Fd) :-
      memberchk([LL,_,AttackedPlayer|_], ArgTurns),
      other_player(AttackedPlayer, Player)
  ),
- print_dot_arg_attacks([L,Sm,Su,Cl], ClusterN, Player, D, C, Att, ArgTurns, Fd),
+ print_dot_arg_attacks([L,Sm,Su,Cl], ClusterN, Player, D, C, Att, ArgTurns, Fd, NewOut),
  ClusterN1 is ClusterN + 1,
- print_dot_args(Args, ClusterN1, D, C, Att, [[L,ClusterN,Player,Sm]|ArgTurns], Fd).
+ print_dot_args(Args, ClusterN1, D, C, Att, [[L,ClusterN,Player,Sm]|ArgTurns], Fd, CurrOut),
+ append(NewOut,CurrOut,Output).
 
-print_dot_arg_attacks([L,Sm,Su,Cl], ClusterN, Player, D, C, Atts, ArgTurns, Fd) :-
- format(Fd, '~n subgraph cluster~w {~n', [ClusterN]),
- (
-  Player = proponent
-  -> PID = 'P'
-  ;  PID = 'O'
- ),
- format(Fd, '  label = "~w:~w";~n', [PID,L]),
- format_lines([
-  '  edge [color="#000000"];',
-  '  labeljust="l";',
-  '  pencolor="#444444";',
-  '  style="filled";'], Fd),
+print_dot_arg_attacks([L,Sm,Su,Cl], ClusterN, Player, D, C, Atts, ArgTurns, Fd, Output) :-
  (
   Player = proponent
   -> graph_colour(proponent_arg, ArgColour)
@@ -195,79 +184,89 @@ print_dot_arg_attacks([L,Sm,Su,Cl], ClusterN, Player, D, C, Atts, ArgTurns, Fd) 
       ;  graph_colour(opponent_unfinished_arg, ArgColour)
      )
  ),
- format(Fd, '  color="~w";~n', [ArgColour]),
- print_dot_arg_nodes(Sm, Su, Cl, ClusterN, Player, D, C, 0, Fd),
- format(Fd, ' }~n', []),
+ print_dot_arg_nodes(Sm, Su, Cl, ClusterN, Player, D, C, 0, Fd, NodesOutput),
  graph_colour(attack_edge, AttackCol),
- format(Fd, '~n edge [color="~w"];~n', [AttackCol]),
- print_dot_attacks(L, Atts, Cl, ClusterN, ArgTurns, C, Fd).
+ print_dot_attacks(L, Atts, Cl, ClusterN, ArgTurns, C, Fd, AttOutput),
+ append(NodesOutput,AttOutput,Output).
 
-print_dot_arg_nodes(Sm, Su, Cl, ClusterN, Player, D, C, 0, Fd) :-
+print_dot_arg_nodes(Sm, Su, Cl, ClusterN, Player, D, C, 0, Fd, [NodeOut|NodesOut]) :-
  !,
- print_dot_arg_node(0, ClusterN, Cl, Player, cl, D, C, Fd),
- print_dot_arg_nodes(Sm, Su, Cl, ClusterN, Player, D, C, 1, Fd).
-print_dot_arg_nodes([], [], _, _, _, _, _, _, _).
-print_dot_arg_nodes([], [S|RestSu], _, ClusterN, Player, D, C, NodeN, Fd) :-
+ print_dot_arg_node(0, ClusterN, Cl, Player, cl, D, C, Fd, NodeOut),
+ print_dot_arg_nodes(Sm, Su, Cl, ClusterN, Player, D, C, 1, Fd, NodesOut).
+print_dot_arg_nodes([], [], _, _, _, _, _, _, _,[]).
+print_dot_arg_nodes([], [S|RestSu], _, ClusterN, Player, D, C, NodeN, Fd, [NodeOut,attack(Src,Targ)|NodesOut]) :-
  !,
- print_dot_arg_node(NodeN, ClusterN, S, Player, ums, D, C, Fd),
- format(Fd, '  s~w_~w -> s~w_0;~n', [ClusterN,NodeN,ClusterN]),
+ print_dot_arg_node(NodeN, ClusterN, S, Player, ums, D, C, Fd, NodeOut),
+ format(Fd, '<attack>~n<source>s~w_~w</source>~n<target>s~w_0</target>~n</attack>~n', [ClusterN,NodeN,ClusterN]),
+ format(atom(Src), 's~w_~w', [ClusterN,NodeN]),
+ format(atom(Targ), 's~w_0', [ClusterN]),
  NodeN1 is NodeN + 1,
- print_dot_arg_nodes([], RestSu, _, ClusterN, Player, D, C, NodeN1, Fd).
-print_dot_arg_nodes([S|RestSm], Su, _, ClusterN, Player, D, C, NodeN, Fd) :-
- print_dot_arg_node(NodeN, ClusterN, S, Player, ms, D, C, Fd),
- format(Fd, '  s~w_~w -> s~w_0;~n', [ClusterN,NodeN,ClusterN]),
+ print_dot_arg_nodes([], RestSu, _, ClusterN, Player, D, C, NodeN1, Fd, NodesOut).
+print_dot_arg_nodes([S|RestSm], Su, _, ClusterN, Player, D, C, NodeN, Fd, [NodeOut,attack(Src,Targ)|NodesOut]) :-
+ print_dot_arg_node(NodeN, ClusterN, S, Player, ms, D, C, Fd, NodeOut),
+ format(Fd, '<attack>~n<source>s~w_~w</source>~n<target>s~w_0</target>~n</attack>~n', [ClusterN,NodeN,ClusterN]),
+ format(atom(Src), 's~w_~w', [ClusterN,NodeN]),
+ format(atom(Targ), 's~w_0', [ClusterN]),
  NodeN1 is NodeN + 1,
- print_dot_arg_nodes(RestSm, Su, _, ClusterN, Player, D, C, NodeN1, Fd).
+ print_dot_arg_nodes(RestSm, Su, _, ClusterN, Player, D, C, NodeN1, Fd, NodesOut).
 
 % TO BE PROVED
-print_dot_arg_node(0, 0, S, _, claim, _, _, Fd) :-
+print_dot_arg_node(0, 0, S, _, claim, _, _, Fd, node(Id,S,Type,claim)) :-
  !,
- format(Fd, '  s~0_0 ', []),
+ format(Fd, '<node>~n<id>s~0_0</id>~n', []),
+ format(atom(Id), 's~0_0', []), 
  (
   assumption(S)
-  -> graph_colour(proponent_asm_toBeProved, Colour)
-  ;  graph_colour(proponent_nonAsm_toBeProved, Colour)
+  -> (graph_colour(proponent_asm_toBeProved, Colour) ,  Type = 'Asm')
+  ;  (graph_colour(proponent_nonAsm_toBeProved, Colour), Type = 'nonAsm')
  ),
- format(Fd, '[label="~w",fillcolor="~w",color="~w",fontcolor="white"];~n', [S,Colour,Colour]).
+ format(Fd, '<name>~w</name>~n~w~n</node>~n', [S,Colour]).
 % PROPONENT ARGUMENTS
-print_dot_arg_node(NodeN, ClusterN, S, proponent, _, _, _, Fd) :-
- format(Fd, '  s~w_~w ', [ClusterN,NodeN]),
+print_dot_arg_node(NodeN, ClusterN, S, proponent, _, _, _, Fd,node(Id,S,Type,Action)) :-
+ format(Fd, '<node>~n<id>s~w_~w</id>~n ', [ClusterN,NodeN]),
+ format(atom(Id), 's~w_~w', [ClusterN,NodeN]), 
  (
   assumption(S)
-  -> graph_colour(proponent_asm, Colour)
-  ;  graph_colour(proponent_nonAsm, Colour)
+  -> (graph_colour(proponent_asm, Colour), Type = 'Asm', Action = 'support')
+  ;  (graph_colour(proponent_nonAsm, Colour), Type = 'nonAsm', Action = 'argument')
  ),
- format(Fd, '[label="~w",fillcolor="~w",color="~w",fontcolor="white"];~n', [S,Colour,Colour]).
+ format(Fd, '<name>~w</name>~n~w~n</node>~n', [S,Colour]).
 % OPPONENT ARGUMENTS: CLAIM
-print_dot_arg_node(0, ClusterN, Claim, opponent, cl, _, _, Fd) :-
- format(Fd, '  s~w_0 ', [ClusterN]),
+print_dot_arg_node(0, ClusterN, Claim, opponent, cl, _, _, Fd, node(Id,Claim,'nonAsm','argument')) :-
+ format(Fd, '<node>~n<id>s~w_0</id>~n', [ClusterN]),
+ format(atom(Id), 's~w_0', [ClusterN]),
  graph_colour(opponent_ms_nonAsm, FillColour),
  graph_colour(opponent_ms_border, BorderCol),
  graph_colour(opponent_ms_nonAsm_text, Font),
- format(Fd, '[label="~w",fillcolor="~w",color="~w",fontcolor="~w"];~n', [Claim,FillColour,BorderCol,Font]).
+ format(Fd, '<name>~w</name>~n~w~n</node>~n', [Claim,FillColour]).
 % OPPONENT ARGUMENTS: MARKED SUPPORT
-print_dot_arg_node(NodeN, ClusterN, A, opponent, ms, D, C, Fd) :-
- format(Fd, '  s~w_~w ', [ClusterN,NodeN]),
+print_dot_arg_node(NodeN, ClusterN, A, opponent, ms, D, C, Fd, node(Id,A,Type,Action)) :-
+ format(Fd, '<node>~n<id>s~w_~w</id>~n', [ClusterN,NodeN]),
+ format(atom(Id), 's~w_~w', [ClusterN,NodeN]),
  (
   % MARKED SUPPORT: CULPRIT
   member(A, C)
-  -> graph_colour(opponent_ms_asm_culprit, FillColour),
+  -> graph_colour(opponent_ms_asm_culprit, FillColour), 
+     Type = 'Asm', Action = 'attack',
      graph_colour(opponent_ms_asm_culprit_text, Font)
   ;
   % MARKED SUPPORT: DEFENCE SET
   member(A, D)
   -> graph_colour(opponent_ms_asm_defence, FillColour),
+     Type = 'Asm', Action = 'support',
      graph_colour(opponent_ms_asm_defence_text, Font)
   ;
   % MARKED SUPPORT: ASSUMPTION (NOT DEFENCE, NOT CULPRIT)
      graph_colour(opponent_ms_asm, FillColour),
+	 Type = 'Asm', Action = 'support',
      graph_colour(opponent_ms_asm_text, Font)
  ),
  graph_colour(opponent_ms_border, BorderCol),
- format(Fd, '[label="~w",fillcolor="~w",color="~w",fontcolor="~w"];~n', [A,FillColour,BorderCol,Font]).
+ format(Fd, '<name>~w</name>~n~w~n</node>~n', [A,FillColour]).
 % OPPONENT ARGUMENTS: UNMARKED SUPPORT
-print_dot_arg_node(NodeN, ClusterN, S, opponent, ums, D, C, Fd) :-
- format(Fd, '  s~w_~w ', [ClusterN,NodeN]),
+print_dot_arg_node(NodeN, ClusterN, S, opponent, ums, D, C, Fd, node(Id,S,Type,Action)) :-
+ format(Fd, '<node>~n<id>s~w_~w</id>~n', [ClusterN,NodeN]),
+ format(atom(Id), 's~w_~w', [ClusterN,NodeN]),
  (
   assumption(S)
   -> (
@@ -275,6 +274,7 @@ print_dot_arg_node(NodeN, ClusterN, S, opponent, ums, D, C, Fd) :-
       -> 
       % UNMARKED SUPPORT: DEFENCE SET
          graph_colour(opponent_ums_asm_defence, FillColour),
+		 Type = 'Asm', Action = 'support',
          graph_colour(opponent_ums_asm_defence_border, Colour),
          graph_colour(opponent_ums_asm_defence_text, Font)
       ;
@@ -282,39 +282,51 @@ print_dot_arg_node(NodeN, ClusterN, S, opponent, ums, D, C, Fd) :-
       ->
       % UNMARKED SUPPORT: CULPRIT
          graph_colour(opponent_ums_asm_culprit, FillColour),
+		 Type = 'Asm', Action = 'attack',
          graph_colour(opponent_ums_asm_culprit_border, Colour),
          graph_colour(opponent_ums_asm_culprit_text, Font)
       ;
       % UNMARKED SUPPORT: NON-DEFENCE SET, NON-CULPRIT
          graph_colour(opponent_ums_asm, FillColour),
+		 Type = 'Asm', Action = 'support',
          graph_colour(opponent_ums_asm_border, Colour),
          graph_colour(opponent_ums_asm_text, Font)
      )
   ;  
      % UNMARKED SUPPORT: NON-ASSUMPTION
      graph_colour(opponent_ums_nonAsm, FillColour),
+	 Type = 'nonAsm', Action = 'argument',
      graph_colour(opponent_ums_nonAsm_border, Colour),
      graph_colour(opponent_ums_nonAsm_text, Font)
  ),
- format(Fd, '[label="~w",fillcolor="~w",color="~w",fontcolor="~w"];~n', [S,FillColour,Colour,Font]).
+ format(Fd, '<name>~w</name>~n~w~n</node>~n', [S,FillColour]).
 
-print_dot_attacks(L, Atts, Cl, ClusterN, ArgTurns, C, Fd) :-
+print_dot_attacks(L, Atts, Cl, ClusterN, ArgTurns, C, Fd, Output) :-
  findall([AttClusterN,Sm], (member(L-LL, Atts),
                             member([LL,AttClusterN,_,Sm], ArgTurns)),
          AttClusterNs),
- print_dot_attacks_aux(AttClusterNs, Cl, ClusterN, C, Fd).
+ print_dot_attacks_aux(AttClusterNs, Cl, ClusterN, C, Fd, Output).
 
-print_dot_attacks_aux([], _, _, _, _).
-print_dot_attacks_aux([[AttClusterN,Sm]|RestAttClusterNs], Cl, ClusterN, C, Fd) :-
+print_dot_attacks_aux([], _, _, _, _,[]).
+print_dot_attacks_aux([[AttClusterN,Sm]|RestAttClusterNs], Cl, ClusterN, C, Fd, Attacks) :-
  (
   contrary(A, Cl),
   nth1(NodeN, Sm, A),
-  format(Fd, ' s~w_0 -> s~w_~w;~n', [ClusterN,AttClusterN,NodeN]),
+  format(Fd, '<attack>~n<source>s~w_0</source>~n<target>s~w_~w</target>~n</attack>~n', [ClusterN,AttClusterN,NodeN]),
   fail
   ;
   true
  ),
- print_dot_attacks_aux(RestAttClusterNs, Cl, ClusterN, C, Fd).
+ findall(X,(contrary(A,Cl),nth1(X, Sm, A)),Z),
+ makeAttacks(Z,ClusterN, AttClusterN, AuxAttacks),
+ print_dot_attacks_aux(RestAttClusterNs, Cl, ClusterN, C, Fd, RestAttacks),
+ append(AuxAttacks,RestAttacks,Attacks).
+
+ makeAttacks([],_,_,[]).
+ makeAttacks([I|Index],ClusterN, AttClusterN, [attack(Src,Targ)| AuxAttacks]):-	
+	format(atom(Src), 's~w_0', [ClusterN]),
+	format(atom(Targ), 's~w_~w', [AttClusterN,I]),
+	makeAttacks(Index, ClusterN, AttClusterN, AuxAttacks).
 
 %% HELPERS
 
