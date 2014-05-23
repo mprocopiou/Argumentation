@@ -1,0 +1,77 @@
+\newpage
+
+\chapter{Grounding a framework over its domain.}
+
+As explained in previous sections the current implementation of the derivation engines of both Grapharg and Proxdd does not support the inputting of frameworks that include non-grounded elements. Consider example [TODO].
+
+[TODO] - Add example of non ground assumption.
+
+The use of assumptions and rules specific to a certain domain is very important when it comes to decision making as often enough assumptions and rules change depending the parameters of a situation. Unbounded variables to assumptions and rules cannot be handled and therefore we are forced with creating frameworks that are either valid towards just one specific domain or provide a general overview of what the expected outcome would be.
+
+\section{The need of specifying a domain for a framework.}
+
+Often enough the assumptions and rules of an ABA framework are valid over a specific domain rather being valid globally. However, defining the domain over which elements of the domain are valid allow us to derive a specific solution for a more specific scenario. Often enough, the parameters of a situation might  affect which assumptions and rules are valid. Consider the example [TODO]
+
+[TODO] - Find Example, Write it and Walk through it.
+
+Therefore, a mechanism must exist that allows the user to specify over which domain the assumptions or rules hold. One such possibility is for the users to directly specify the parameters of an assumption or rule in the declaration sentence when inputting the framework. This would be a cumbersome task especially when it comes to exceptionally large frameworks. 
+
+Consider, for example an assumption that is valid for 20 different people. When inputting the framework the user would have to declare a new assumption for every individual. This would imply that the user will have to declare the same assumption, but with different parameters, 20 times.
+
+An alternative is to provide the user with the ability to define the framework over which an element is valid and then build a grounder that would bound all unbound variables according to the domain specified.
+
+\section{Implementing a grounder.}
+
+The input language of the application allows the user to define a domain over which assumptions and rules are valid as specified in section [TODO]. However, for the domain to come into effect the elements declared in the input should be grounded over the provided domain. The grounder was implemented in the Server module using C\# and is part of the pre-processing of the input (as shown in figure [TODO]) before the corresponding input to the derivation engine is generated. This implies that the input to the derivation engine does not include any unbounded variables, which is a requirement by the current derivation engines Proxdd and Grapharg.
+
+The grounder used in our implementation has been developed from the ground up and is based on the grounder algorithms used by DLV (Add reference [TODO]). The algorithms themselves, along with details of the implementation are provided in section [TODO].
+
+With the existence of a grounder our web application can now handle more real world decision problems that have been formulated in an ABA framework. It can also evaluate the validity of a claim given certain parameters and can provide an analysis of domain specific problems.
+
+\subsection{Description of the algorithm.}
+
+The algorithm implemented is built based on the grounder algorithms used for DLV (reference [TODO]). The objective of the grounder is to take the user specified framework and ground the individual components over the domain they are valid. This is carried out by the algorithm described in this section. The algorithm can be summarised in the following simplified steps:
+
+\begin{enumerate}
+\item The elements of the framework are placed in the EDB and IDB. If an element is an assumption or a fact (a rule without a body) then they are grounded based on the domain they are specified and added to the EDB. All other rules that are depended on other predicates are added to the IDB.
+\item A dependency graph of the program represented by the IDB is formulated and split into subprograms, thus creating a modular dependency graph made up of Strongly Connected Components.
+\item An ordering of the modules of the dependency graph is derived and implemented.
+\item The modules are processed in the order defined and the grounded rules within each module are instantiated and added to the grounded program.
+\end{enumerate}
+
+As specified the first step of our grounding process is to identify facts that definitely hold in our framework, ground them over the domain specified and add them to the EDB. This includes two special cases:
+
+\begin{itemize*}
+\item \emph{asm(a,b)\textbraceleft X=1,2,3; \textbraceright.} - once assumptions and contraries are defined then they must exist in the ABA framework as they are not reliant on the existence of other predicates.
+\item \emph{b(X)\textless- \textbraceleft X=1,2,3; \textbraceright.} - rules without a body are equivalent to \emph{b(X)\textless- true} and therefore again are not reliant on the existence of other predicates.
+\end{itemize*}
+
+Both of these cases can simply be grounded by calculating all possible combinations of the variables as defined in the domain by the user and then instantiating these predicates with these combinations and adding them to the EDB. The rest of the rules are added to the IDB for further processing and grounding.
+
+Once we have isolated the initial IDB we can now pre-process it and start working towards grounding the various extra rules. This pre-processing allows us to avoid instantiating unnecessary rules that are not achievable since their predicates are not valid under the specified domain. The first step of the pre-processing is generating a dependency graph that replicates the interdependencies between the various rules. This is pretty straight forward to implement and was done by creating a data structure that includes the nodes and the edges between them as specified in  [TODO].
+
+Having established the dependency graph we now proceed by partitioning the graph into sub-programs. This is done by identifying strongly connected components (SCC) as defined in definition [TODO].	The dependency graphed is analysed using Tarjan's strongly connected component (see [TODO]) algorithm and the modules of our graph are identified and used to construct a new Component graph representing the program.
+
+With the modular dependency graph now constructed we must derive an ordering between the modules. The modules are placed into sorted list with the order being defined as in  [TODO]. This enables us to first instantiate the rules on which rules from the following modules depend on. Having done so we can minimise the amount of unnecessary rules that would be created as explained in [TODO].
+
+Having completed the pre-processing stage we can now focus on instantiating the rules that represent our framework over the defined domain. This is carried out by the algorithms used for DLV (reference [TODO]) which are described in [TODO]. These instantiate the rules of one module at a time and work incrementally until all of the modules of the ordered list are processed. 
+
+For every rule we instantiate it according to the matching algorithm as defined in [TODO]. This algorithm goes through the predicates of a rule and finds valid grounded substitutes of the predicate already existing on the EDB. If a match is found then that substitution of the rule is added to the grounded program and the EDB.
+
+Once all the rules of all the modules have been processed we are now provided with the final grounded framework.
+
+\subsection{Advantages of implementation.}
+
+An easier to implement and more primitive grounder could simply compute all possible values for each variable in our framework and then build a dictionary of these values. This dictionary would then be used to create the grounded rules using all possible combinations of values for the unbounded variables. Nonetheless, this could create an explosion to the size of the framework that might be unnecessary. Consider the following example:
+
+[TODO] - Example of explosion. Assumption with 
+
+By implementing a smarter grounded we can avoid the generation of rules that are not achievable. If a rule is made up of predicates that are not valid over the domain specified then the rule is not constructed in the final grounded framework. This allows us to restrict our framework only to rules that could be valid and useful. This also provides a performance boost to the derivation engines as the framework provided for analysis is smaller.
+
+\subsection{Disadvantages of implementation.}
+
+Grounders are an extensive research area especially when it comes to creating highly optimised algorithms. There are several techniques that can be used to improve the performance of a grounder and make it more efficient such as [TODO] reference to Gringo and [TODO] Reference to BJ instantiate for DLV. Our implementation does not focus on making the most of these optimisation techniques. This was deemed reasonable as since the input will be defined  by the user will hardly ever be of a size that would provide a considerable performance gain to justify the extra development effort that would be required to implement these optimisation techniques.
+
+Additionally, the current grounder is restricted in when it comes to the input it accepts. Although it serves the formal input language defined it would require additional development to be used in other cases or if the formal language is extended. The most notable limitation of our grounder is its inability to accommodate negative predicates, as in exampe [TODO]. However, in the ABA frameworks we are analysing negative predicates are not often encountered in the body of a rule.
+
+\section{Example of expected output.}

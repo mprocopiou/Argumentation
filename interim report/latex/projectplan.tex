@@ -1,0 +1,21 @@
+\newpage
+\chapter{Project Plan}
+``Failing to plan is planning to fail'' --- Winston Churchill
+\newline
+
+As with any project, planning and time management are imperative. To avoid getting overwhelmed by the workload required by the project, it has been preliminarily planned in the following way. Due to the agile nature of software development and the timeframe in which the implementation must be finalised, the following planning is preliminary and subject to change as the project moves on. For clarity purposes planning was split in three sections; Planning Implementation, Project Timeline, Planning Future extensions.
+
+
+\section{Planning Implementation}
+The application designed and implemented will take the form of a web-application. This will allow the system to be readily accessible to anyone over the internet, rather than having to be designed for a specific operating system and having to have the users to download and set-up the system. Such an approach will enhance the user-experience and make the system more maintainable as updates and additional features will have to be implemented just on the developers' side. 
+
+I have decided to use C\# and the ASP.NET framework to develop the application. By using a widely supported framework I will ensure that the application functions correctly on a wide range of internet browsers. Additionally, the underlying Model-View-Controller software pattern of ASP.NET suits the problem at hand, as it will allow me to abstract the analysis aspect of the application from the visualisation aspect. This can have exceptional benefits in the future as different Views can be generated to represent other visualisation options in the future. For the visualisations themselves, I will be using the D3.js package that allows for easy interactive visualisations to be created. Lastly, the computational engines behind the application will be the existing Proxdd and Grapharg systems (described in \cref{subsec:proxdd} and \cref{subsec:grapharg})  which will be invoked through SICSTUS Prolog.
+
+\section{Project Timeline}
+Below is the preliminary timetable for the tasks that need to be completed for the project. This timetable is open to revision in case the projects runs into trouble. Nonetheless, an underlying general timeframe exists and is defined by the milestones (shaded in grey). Ideally, the basic functionality required for the project should be completed by the end of March, allowing April and May for implementing potential extensions (see \cref{subsec:ideal}, \cref{subsec:decision}, \cref{subsec:mapping}) and June for the final project write-up. These milestones can also act as roll-back positions. If the development of the extensions fail the system can always be rolled-back to its previous stable state (last achieved milestone).
+\input{./plantable}
+
+\section{Planning Future Extensions}
+Having established the applications the project can, in the future, be extended to enhance the experience or add new functionality. For example, we could allow for the direct input of Decision Problems (see \cref{subsec:decision}) or we could extend the application to support AA argumentation as well by implementing the necessary mapping (see \cref{subsec:mapping}). An attempt to these extensions has been scheduled and might be carried out if time allows it.
+
+However, in addition to these planned extensions there are some interesting further enhancements that can be considered in the future. A creation of a stable and useful API for the underlying system would be of great use as it would allow for developers to make use of the system in there developing aspirations. This could provide the necessary platform for developers to launch Argumentation as a commercially viable tool. Additionally, this could lead to a further extension of the project that will involve the creation of real-life problem solvers that will use the argumentation engines. Due to the planned architecture of the system, this should be simple to do, especially with the inclusion of an API. Lastly, if decision tools are indeed designed using this system, then in the future it might be useful to consider make the web-application also available for hand-held devices. This will allow the tools to be used on the fly by users, making them even more accessible.

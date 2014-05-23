@@ -1,0 +1,75 @@
+\newpage
+
+\chapter{Implementing Ideal Semantics dispute derivations.}
+
+When analysing an ABA framework semantics play an important roles. As explained in section [TODO] Background, when finding a derivation for a claim the semantics by which we do so must be specified. The current derivation engines Proxdd and Grapharg support derivation based on Grounded and Admissible semantics (as defined in [TODO]). As part of our implementation I looked into extending the Proxdd engine to support derivations based on ideal semantics. For an overview of ideal semantics refer to section [TODO].
+
+\section{Extending Proxdd to include ideal semantics.}
+
+Ideal Semantics dispute derivations are heavily based on the admissible semantics based dispute derivations. Proxdd already implements the such a derivation using the sxdd dispute derivation algorithm as described in [TODO]. This algorithm can be adapted to provide a derivation based on ideal semantics by extending it as in the algorithm described at  [TODO]. There a are two adaptations to be made to the ab-derivation algorithm so that it can compute ideal semantics based dispute derivations:
+
+\begin{enumerate}
+\item Extend the algorithm to compute (P,O,D,C,Attacks,Arguments,F) tuples instead of the current (P,O,D,C,Attacks,Arguments) tuples and update F according to the algorithm in section [TODO].
+\item Implement the \emph{Fail(S)} check as explained in section [TODO]. This check is then implemented in an extra step in the algorithm as described in section [TODO].
+\end{enumerate}
+
+\section{Implementing ideal semantics.}
+
+When implementing the ideal semantics the process was broken out in three steps:
+
+\begin{enumerate}
+\item Append the ``F'' list to the tuples and update it correctly.
+\item Implement the \emph{Fail(S)} check procedure.
+\item Bring everything together in the final derivation engine.
+\end{enumerate}
+
+Our ability to modularise the implementation process was largely dependent on the fact that the implementation is an extension of the ab-dispute derivation algorithm already implemented. This implied that each of the three steps could be implemented and tested individually before connecting the parts in our final derivation engine. The sections that follow ([TODO]) elaborate on the changes that were required, the implementation process and difficulties faced when implementing.
+
+\subsubsection{Updating the F set.}
+
+The first step was also the step that was less invasive to the current implementation of the derivation engine. This involved appending the ``F'' set to the tuples used by the sxdd algorithm as described in definition [TODO]. Additionally the updating of the ``F'' set was not invasive to the rest of the already implemented sxdd algorithm. This can be seen in the algorithm in section [TODO]. Therefore, ``F'' could be included and updated throughout Proxdd's sxdd algorithm without interfering with ab-dispute derivations or gb-dispute derivations. The ``F'' set would be updated at any derivation but its content would be irrelevant unless the user specified that ideal semantics were desirable.
+
+Updating the ``F'' set in accordance with the algorithm in most cases is straight forward. Consider the case where it is the Proponent's turn. In this case the ``F'' set remains unchanged. As in step [TODO] of example [TODO]. The updating process becomes more complicated when it is the Opponent's turn. On most cases (as seen in the algorithms definition [TODO]) the ``F'' set is updated by adding the sentences that are unmarked. Marking of sentences is already handled by the existing sxxdd algorithm and we can therefore use the current implementation to add add just the corret sentences.
+
+The most complicated updating of the ``F'' set takes place at step [TODO].	An update at this step is illustrated by the example [TODO].
+
+[TODO] - Add example that updates the F set accordingly.
+
+Having appended the ``F'' set we can then test that it is updated correctly, in accordance to the algorithm, without having to implement any of the next steps. This can be done using the ab-dispute derivation semantics and checking the value of the ``F'' set at each step. The ``F'' set would simply be ignored and the derivation should still return a valid derivation.
+
+It should be noted that, according to the algorithm in [TODO], the ``F'' set is also update when it is F's turn and a set of sentences is selected from ``F''. However, this case was implemented in the third step as it would not come into effect until we need to become invasive with the current implementation.
+
+\subsubsection{Carrying out the \emph{Fail(S)} check.}
+
+The purpose of including an ``F'' set that is being updated during the derivation process, is so that we can run the \emph{Fail(S)} check over the set of sentences included in ``F''. \emph{Fail(S)} is referred to by [TODO] reference as the Fail-dispute derivation of a multiset of sentences. The \emph{Fail(S)} check was implemented in accordance to the algorithm defined in [TODO] and in accordance to [TODO] reference.
+
+[TODO] Add paragraph about what exactly it checks, ask Toni at meeting.
+
+Similarly the \emph{Fail(S)} check plays a Proponent/Opponent games similarly to how the dispute derivation games are played and similarly produces tuples of the structure (P,O,D,C). In fact the new tuple is created using steps from the algorithm in [TODO] as defined in the fail-dispute derivation algorithm in [TODO].
+
+Having implemented the various cases and steps the ideal semantics algorithm was tested by running each step with dummy input and checking whether the output would reflect the expected output, as illustrated by example [TODO]. This ensured the validity of the tuples generated. Having established the validity of these steps we then incorporated them together in a recursive dispute derivation game (see algorithm in [TODO]). This enabled us to check \emph{Fail(S)} as a whole by again inputting a dummy case and checking whether the derivation process was carried out and completed. In this case, due to the semantics being implemented in Prolog, the \emph{Fail(S)} check was expected to either fail or return true if it succeeded, depending on the input we provided. Nonetheless, to ensure the validity of the derivation the process was checked at each step to ensure that the tuples were being generated as expected.
+
+The current implementation has potential to be optimised further to allow for faster Fail-dispute derivation checks. This would be especially useful in larger scale frameworks. Although the functionality is accurate there is still room for improvement in some areas. One such area can be the selection process by which the algorithm chooses which sentence or set of sentences to check at each turn. For the ab-derivation in Proxdd there is a a selection process that implements an ordering on these sentences before it chooses. Such an optimisation has not been implemented in the current implementation. Currently the Fail-dispute derivation chooses sentences simply by picking off the head of the list each time.
+
+
+\subsubsection{Adding the Ideal Semantics to Proxdd.}
+
+The final step involved seamlessly incorporating these new features in the current implementation of Proxdd. The derivation engine uses flags such as ``set\textunderscore ab.'' and ``set\textunderscore gb.'' to allow the user to specify which semantics to be used. Naturally, a similar ``set\textunderscore ib.'' flag was implemented to allow the user to specify the use of ideal semantics.
+
+The major change of the ib-dispute derivation is the inclusion of a ``new player'' in the dispute derivation game, the set ``F''. Similarly, to admissible dispute derivation the game is played until both P and O of the currently processed tuple are empty. This would imply the termination of the derivation process having successfully found a derivation solution for the claim provided under the semantics for admissibility. However, in ideal semantics we are looking for a specific subset of the admissible solutions which is defined by whether the \emph{Fail(S)} check is satisfied for all sets in `F'' as defined in [TODO].
+
+Therefore, the first design choice we need to make is when do we attempt to check whether the sets in ``F'' satisfy the Fail-dispute derivation check. Our solution to this problem is to let the ab-derivation run to completion (i.e both P and O are empty) and then, instead of terminating, identifying that it is F's turn to run the fail-dispute derivation check. Therefore, when incorporating the ideal semantics into Proxdd the ``choose\textunderscore turn'' function was adapted as shown in definition [TODO].
+
+[TODO] - Add code of choose\textunderscore turn.
+
+By implementing F's turn we now have an implementation of the algorithm that finds an admissible derivation and then checks whether this solution is also in accordance to the ideal semantics, as specified in algorithm [TODO].
+
+Additionally to the ``choose\textunderscore turn'' function the ``derivation'' function had to be adapted as well. Specifically, the base case had to be adapted as shown in [TODO].
+
+[TODO] add new derivation function code.
+
+The current implementation of Proxdd terminates the derivation successfully if both P and O are empty. However as noted already in ideal semantics this is not enough. The derivation base case has been adapted so as to terminate successfully when the ``F'' set is empty as well. This implies that each set of sentences in the ``F'' set has successfully  passed the \emph{Fail(S)} check and has been removed from ``F'' in accordance to the algorithm defined in [TODO]. 
+
+An empty ``F'' set at the end implies that the solution found is a valid derivation under ideal semantics. If the ``F'' set is not empty then the base case of the derivation function is never reached, Prolog fails the derivation and attempts a different solution. Thus, enforcing dispute derivations under ideal semantics.
+
+\section{Example of ideal derivation.}

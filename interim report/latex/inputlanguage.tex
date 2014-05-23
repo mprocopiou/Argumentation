@@ -1,0 +1,87 @@
+\newpage
+
+\chapter{Creating an Input Language.}
+
+A user of the application must be able to define an ABA framework from which he wants to derive a solution for a claim. Therefore a mechanism must exist that allows the user to do so. However, the web application has been designed with extendibility in mind and the input provided should be in a form that makes it useful irrespective of the underlying derivation engine.
+
+\section{Creating a Context Free Grammar for the Input.}
+
+When deciding on the input method there were several parameters that had to be considered. Some of the most important ones were:
+
+\begin{itemize*}
+\item It must be easy for the user to understand and use.
+\item Should be able to accommodate all the derivation engines implemented now and in the future.
+\item Should allow for the easy input of both large and small frameworks.
+\end{itemize*}
+
+Having considered these factors, the input method chosen for the web application is a simple text input comprised of predetermined commands that can be interpreted by a parser to input the framework to the desired derivation engine.
+
+\section{The need for a new input.}
+
+Perhaps the most important reason for defining formally a new input language to create frameworks is that by abstracting the input language from the derivation engines we can then use a single language for all the potential derivation engines. Alternatively, the user would have to be aware of the input mechanism for each derivation engine. Instead we chose to abstract the user input from the engines themselves and then create the corresponding required input for the specified engine. Essentially the user remains blissfully ignorant of the specifics of each derivation engine and of the further tiers of the systems. This reduces their ability to interfere with the engines directly and avoids confusion between different input languages.
+
+Furthermore the input language suggested and implemented was designed to be as simple and straight forward as possible. This reflects the fact defining an ABA framework simply requires the definition of assumptions, rules and contraries. Therefore, the language is made up of two statements:
+
+\begin{itemize*}
+\item asm(a,b). used to define an assumption and its contrary.
+\item b(X) <- [a(X)]. used to define a rule.
+\end{itemize*}
+
+Additionally, the language we specified allows for the definition of a domain over each of the elements of the framework is valid. By combining this with the grounder described in section [TODO], we can define domain specific framework. This feature of our language also allows us to reduce the amount of lines of input the user has to enter in order to define a specific framework.
+
+\subsection{Formal definition of Input.}
+
+In order to be able to check the input for validity a formal definition must be followed. The Context Free Grammar for our input language is defined below in section [TODO].
+
+[TODO] FORMAL DEFINITION.
+
+\section{Parsing in the input.}
+
+Having formally defined the language we now proceeded with creating an interpreter to parse the user input and take the necessary action. This involves a simple 3 step process (as in figured [TODO]) by which the input is parsed, checked if it is valid and then the corresponding input for the targeted derivation engine is generated.
+
+\subsection{Building a simple parser for the language.}
+
+As noted the input language specified has just two distinct commands that the user can use to specify elements of a framework. This is due to the simplicity of specifying ABA frameworks. The two commands available are:
+
+\begin{itemize*}
+\item \emph{asm(a,b).} - used to define an assumption and its contrary.
+\item \emph{b(X) \textless- [a(X)].} -  used to define a rule.
+\end{itemize*}
+
+The input can be considered as a series of statements separated by the terminal character ``.''. Each statement specifies either an assumption with its contrary or a rule. Using these two commands interchangeably  the user can specify their argumentation framework. By keeping the language simple a simple parser can be created that checks whether each input statement is in one of the two forms.
+
+Once a statement is extracted it is mapped to one of the two cases using the unique identifier tokens ``asm('' or ``<-'', which are used to identify whether the user is specifying a rule or an assumption. The tokens were chosen to be easy to remember and reuse. The use of the ``<-'' operator in the rule definition is exceptionally memorable for users as it is the most common way in which rules are specified in the literature and it is a also a very commonly used operator in logic overall.
+
+Due to the simple and strict nature of the language the parser created is simple in its implementation. It carries out the the following three tasks:
+
+\begin{enumerate}
+\item Separates the statements by the terminal character ``.''.
+\item Each statement is then identified as either an assumption declaration, rule declaration or an invalid statement.
+\item If the statement is valid, it is then separated in its individual parts according to the terminal symbols and the corresponding object (a rule or an assumption/contrary) is created.
+\end{enumerate}
+
+In addition to these two commands the language also offers the possibility for the user to define a domain over which certain assumptions and rules are valid. this is done using the tokens defined in [TODO]. The existing engines of Proxdd and Grapharg do not take into account ungrounded assumptions and rules that contained unassigned variables. However, when defining an ABA framework it might be the case that the same assumption holds over various members of a domain.
+
+The language supports the definition of a domain over which an assumption is valid. The functionality of grounding these assumptions over the domain is handled as part of a pre-processing step before the input for the derivation engines is generated. This is explained thoroughly in section [TODO].
+
+If the parser manages to parse the whole of the input successfully, then by the end a web of assumption contrary and rule objects is created, that corresponds to the ABA framework defined.
+
+\subsection{Verifying the correctness of the input.}
+
+One of the key purposes of the parser is not only to interpret the input, but also to verify whether it is valid. Due to the limited amount of statements that are considered valid and the simple linear structure of an input (list of statements) we can simply compare each statement against a mask created using a regular expression. Specifically the regular expressions are defined in [TODO].
+
+[TODO] - Add regular expressions.
+
+If a statement does not fit in these regular expressions then it is an invalid statement and the input in its entirety is considered as invalid. This strict approach to the input ensures that the user has not made any human error that would render it invalid.
+
+\subsection{Forcing the existence of a contrary.}
+
+ABA frameworks themselves have certain rules by which they must adhere to. A common example, that is prone to human error when defining an ABA framework, is that a contrary must be defined for every assumption declared. Our suggested input language is constructed so as to force the user to declare the contrary upon defining a new assumption. This is done by incorporating the definition of a contrary in the declaration of an assumption, as shown in example [TODO].
+
+By forcing the user to define the contrary in the same step as declaring the assumption we ensure that there will always exist a contrary for an assumption. It should be noted that the current implementation restricts the user to defining only one contrary for each assumption. If the need arises in the future then the second term in the assumption command could be redesigned as a list that could specify more than one contraries for a single assumption.
+
+\section{Example of an input.}
+
+To illustrate a valid input corresponding to a valid ABA framework the following example is provided [TODO].
+
+[TODO] - Add input example and formal definition of corresponding framework.

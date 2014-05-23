@@ -1,0 +1,65 @@
+\begin{thebibliography}{10}
+
+\bibitem{graphargsys}
+Dr.~Robert Craven.
+\newblock Grapharg.
+\newblock {\em http://www.doc.ic.ac.uk/$\sim$rac101/proarg/grapharg.html}.
+
+\bibitem{proxddsys}
+Dr.~Robert Craven.
+\newblock Proxdd.
+\newblock {\em http://www.doc.ic.ac.uk/$\sim$rac101/proarg/proxdd.html}.
+
+\bibitem{grapharg}
+Robert Craven, Francesca Toni, and Matthew Williams.
+\newblock Graph-based disput derivations in assumption-based argumentation.
+\newblock In {\em TAFA 2013}.
+
+\bibitem{abafinal}
+Phan~Min Dung, Robert Kowalski, and Francesca Toni.
+\newblock Assumption-based argumentation.
+\newblock In {\em Argumentation in AI}.
+
+\bibitem{idealsem}
+P.M. Dung, P.~Mancarella, and F.~Toni.
+\newblock Computing ideal sceptical argumentation.
+\newblock {\em Artificial Intelligence}, 171(10–15):657 -- 660, 2007.
+\newblock <ce:title>Argumentation in Artificial Intelligence</ce:title>.
+
+\bibitem{aspartix}
+Uwe Egly, Sarah~Alice Gaggl, and Stefan Woltran.
+\newblock Aspartix: Implementing argumentation frameworks using answer-set
+  programming.
+\newblock In Maria~Garcia de~la Banda and Enrico Pontelli, editors, {\em Logic
+  Programming, 24th International Conference, ICLP 2008, Udine, Italy, December
+  9-13 2008, Proceedings}, volume 5366 of {\em Lecture Notes in Computer
+  Science}, pages 734--738. Springer, 2008.
+
+\bibitem{AAmapping}
+Francesca Toni.
+\newblock Reasoning on the web with assumption-based argumentation.
+\newblock In {\em 8th Reasoning Web Summer School volume 7487 of Lecture Notes
+  in Computer Science}.
+
+\bibitem{proxdd}
+Francesca Toni.
+\newblock A generalised framework for dispute derivations in assumption-based
+  argumentation.
+\newblock {\em Artificial Intelligence}, 195(0):1 -- 43, 2013.
+
+\bibitem{abatut}
+Francesca Toni.
+\newblock A tutorial on assumption-based argumentation.
+\newblock {\em Argument \& Computation}, 2013.
+
+\bibitem{aspartixsys}
+TU~Wien.
+\newblock Aspartix.
+\newblock {\em http://www.dbai.tuwien.ac.at/proj/argumentation/systempage/}.
+
+\bibitem{decision}
+Fan Xiuyi and Toni Francesca.
+\newblock Decision making with assumption-based argumentation.
+\newblock In {\em TAFA 2013}.
+
+\end{thebibliography}
