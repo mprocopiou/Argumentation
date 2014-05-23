@@ -17,6 +17,10 @@
                 <td style="padding:0;">
                     <asp:RadioButton id="Grounded" GroupName="Semantics" runat="server" />
                 </td>
+                <td style="padding:0;"><asp:Label ID="IdealText" runat="server" Text="Ideal" /></td>
+                <td style="padding:0;">
+                    <asp:RadioButton id="Ideal" GroupName="Semantics" runat="server" />
+                </td>
             </tr>
             <tr>
                 <td style="padding:0;"><asp:Label ID="ProxddText" runat="server" Text="Proxdd" /></td>

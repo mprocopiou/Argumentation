@@ -223,6 +223,9 @@
     <Content Include="Prolog\grapharg\data\toni6_2.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Prolog\idealsemantics\proxdd\data\test.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Prolog\proxdd\code\test.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -383,6 +386,67 @@
     </Content>
     <Content Include="Prolog\grapharg\code\runAb.pl" />
     <Content Include="Prolog\grapharg\code\runGb.pl" />
+    <Content Include="Prolog\idealsemantics\proxdd\code\filtering.pl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Prolog\idealsemantics\proxdd\code\help.pl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Prolog\idealsemantics\proxdd\code\printing.pl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Prolog\idealsemantics\proxdd\code\proxdd.pl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Prolog\idealsemantics\proxdd\code\proxdd.sicstus4">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Prolog\idealsemantics\proxdd\code\proxdd.swi">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Prolog\idealsemantics\proxdd\code\proxdd.yap">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Prolog\idealsemantics\proxdd\code\proxdd_mod.pl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Prolog\idealsemantics\proxdd\code\selection.pl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Prolog\idealsemantics\proxdd\data\a12.pl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Prolog\idealsemantics\proxdd\data\example.pl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Prolog\idealsemantics\proxdd\data\example1.pl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Prolog\idealsemantics\proxdd\data\exampleFail.pl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Prolog\idealsemantics\proxdd\data\exampleFail2.pl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Prolog\idealsemantics\proxdd\data\exampleFail3.pl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Prolog\idealsemantics\proxdd\data\exampleFail4.pl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Prolog\idealsemantics\proxdd\data\exampleSucc1.pl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Prolog\idealsemantics\proxdd\data\exampleSucc2.pl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Prolog\idealsemantics\proxdd\data\toni6_2.pl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Prolog\idealsemantics\proxdd\scripts\proxdd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Prolog\idealsemantics\proxdd\code\runIb.pl" />
     <None Include="Properties\PublishProfiles\argumentation - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\argumentation - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\isstest.pubxml" />

@@ -1,0 +1,30 @@
+
+%% FILTERING
+
+% only for ab- and gb-derivations
+
+fDbyC(R, C) :-
+ \+ (member(A, R),
+     member(A, C)).
+
+fDbyD(R, D, FDbyD) :-
+ (
+  ab_derivation
+  -> subtract(R, D, FDbyD)
+  ;
+  gb_derivation
+  -> FDbyD = R
+  ;
+  ib_derivation
+  -> subtract(R, D, FDbyD)
+ ).
+
+fCbyD(A, D) :-
+ \+ member(A, D).
+
+fCbyC(L, C) :-
+ \+ gb_derivation,
+ member(E, L),
+ member(E, C),
+ !.
+

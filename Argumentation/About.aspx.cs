@@ -55,7 +55,12 @@ namespace Argumentation
             //TODO WHAT IF CAPS IN FILE NAME? WILL PROLOG STILL LOAD?!?
             //string filename = Path.GetRandomFileName();
             //filename = Path.ChangeExtension(filename, ".pl");
-            if (Proxdd.Checked)
+            if (Proxdd.Checked & Ideal.Checked) 
+            {
+                dir = dir + @"Prolog\idealsemantics\proxdd\";
+                engine = 3;
+            }
+            else if (Proxdd.Checked)
             {
                 dir = dir + @"Prolog\proxdd\";
                // engineOutput = dir + @"data\" + filename;
@@ -81,14 +86,16 @@ namespace Argumentation
 
             string runProlog = "";
             // TODO possibly redundant Engine check because of dir being assigned above.
-            if (Admissible.Checked & Proxdd.Checked)            
-                runProlog = dir + @"code\runAb.pl";            
-            else if (Grounded.Checked & Proxdd.Checked)            
-                runProlog = dir + @"code\runGb.pl";            
+            if (Admissible.Checked & Proxdd.Checked)
+                runProlog = dir + @"code\runAb.pl";
+            else if (Grounded.Checked & Proxdd.Checked)
+                runProlog = dir + @"code\runGb.pl";
             else if (Admissible.Checked & Grapharg.Checked)
                 runProlog = dir + @"code\runAb.pl";
             else if (Grounded.Checked & Grapharg.Checked)
                 runProlog = dir + @"code\runGb.pl";
+            else if (Ideal.Checked & Proxdd.Checked)
+                runProlog = dir + @"code\runIb.pl";
             //TODO might need to wrap up Engine in try catch.
             //Environment.SetEnvironmentVariable("SWI_HOME_DIR", @"C:\Program Files (x86)\swipl\boot32.prc");  // or boot64.prc
             //string testVar = Environment.GetEnvironmentVariable("SWI_HOME_DIR");  // or boot64.prc

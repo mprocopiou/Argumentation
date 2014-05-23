@@ -67,6 +67,24 @@ namespace Argumentation {
         protected global::System.Web.UI.WebControls.RadioButton Grounded;
         
         /// <summary>
+        /// IdealText control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label IdealText;
+        
+        /// <summary>
+        /// Ideal control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RadioButton Ideal;
+        
+        /// <summary>
         /// ProxddText control.
         /// </summary>
         /// <remarks>

@@ -1,0 +1,17 @@
+
+:- use_module(library(samsort), [samsort/3]).
+
+% convert a number into the corresponding atom
+number_atom(N, A) :-
+ number_codes(N, Codes),
+ atom_codes(A, Codes).
+
+% subtract(X, Y, Z)
+% - Z is the list of members of X not in Y
+subtract(X, Y, Z) :-
+ subtract_(Y, X, Z).
+
+subtract_([], X, X).
+subtract_([H|T], InList, Result) :-
+ delete(InList, H, OutList),
+ subtract_(T, OutList, Result).
