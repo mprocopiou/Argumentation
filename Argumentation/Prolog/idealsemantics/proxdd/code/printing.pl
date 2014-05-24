@@ -135,10 +135,7 @@ graph_colour(attack_edge,                       '#BB2222').
 %%
 
 print_solution(Solution, Output) :-
- dot_filename(FileName),
- open(FileName, write, Fd),
- print_dot_file(Solution, Fd, Output),
- close(Fd).
+ print_dot_file(Solution, Output).
 
 dot_filename(DirAndFileName) :-
  filestem(FileStem),
@@ -152,16 +149,14 @@ dot_filename(DirAndFileName) :-
  atom_concat(NumberedFile, '.xml', FileName),
  atom_concat(Dir, FileName, DirAndFileName).
 
-print_dot_file([D,C,Args,Att], Fd, Output) :-
- dot_preliminaries(Fd),
- print_dot_args(Args, 0, D, C, Att, [], Fd, Output),
-  format(Fd, '~n</solution> ~n', []).
+print_dot_file([D,C,Args,Att], Output) :-
+ print_dot_args(Args, 0, D, C, Att, [], Output).
 
 dot_preliminaries(Fd) :-
   format(Fd, '<solution> ~n', []).
 
-print_dot_args([], _, _, _, _, _, _, []).
-print_dot_args([[L,Sm,Su,Cl]|Args], ClusterN, D, C, Att, ArgTurns, Fd, Output) :-
+print_dot_args([], _, _, _, _, _, []).
+print_dot_args([[L,Sm,Su,Cl]|Args], ClusterN, D, C, Att, ArgTurns, Output) :-
  (
   L = 1
   -> Player = proponent
@@ -169,12 +164,12 @@ print_dot_args([[L,Sm,Su,Cl]|Args], ClusterN, D, C, Att, ArgTurns, Fd, Output) :
      memberchk([LL,_,AttackedPlayer|_], ArgTurns),
      other_player(AttackedPlayer, Player)
  ),
- print_dot_arg_attacks([L,Sm,Su,Cl], ClusterN, Player, D, C, Att, ArgTurns, Fd, NewOut),
+ print_dot_arg_attacks([L,Sm,Su,Cl], ClusterN, Player, D, C, Att, ArgTurns, NewOut),
  ClusterN1 is ClusterN + 1,
- print_dot_args(Args, ClusterN1, D, C, Att, [[L,ClusterN,Player,Sm]|ArgTurns], Fd, CurrOut),
+ print_dot_args(Args, ClusterN1, D, C, Att, [[L,ClusterN,Player,Sm]|ArgTurns], CurrOut),
  append(NewOut,CurrOut,Output).
 
-print_dot_arg_attacks([L,Sm,Su,Cl], ClusterN, Player, D, C, Atts, ArgTurns, Fd, Output) :-
+print_dot_arg_attacks([L,Sm,Su,Cl], ClusterN, Player, D, C, Atts, ArgTurns, Output) :-
  (
   Player = proponent
   -> graph_colour(proponent_arg, ArgColour)
@@ -184,64 +179,56 @@ print_dot_arg_attacks([L,Sm,Su,Cl], ClusterN, Player, D, C, Atts, ArgTurns, Fd, 
       ;  graph_colour(opponent_unfinished_arg, ArgColour)
      )
  ),
- print_dot_arg_nodes(Sm, Su, Cl, ClusterN, Player, D, C, 0, Fd, NodesOutput),
+ print_dot_arg_nodes(Sm, Su, Cl, ClusterN, Player, D, C, 0, NodesOutput),
  graph_colour(attack_edge, AttackCol),
- print_dot_attacks(L, Atts, Cl, ClusterN, ArgTurns, C, Fd, AttOutput),
+ print_dot_attacks(L, Atts, Cl, ClusterN, ArgTurns, C, AttOutput),
  append(NodesOutput,AttOutput,Output).
 
-print_dot_arg_nodes(Sm, Su, Cl, ClusterN, Player, D, C, 0, Fd, [NodeOut|NodesOut]) :-
+print_dot_arg_nodes(Sm, Su, Cl, ClusterN, Player, D, C, 0, [NodeOut|NodesOut]) :-
  !,
- print_dot_arg_node(0, ClusterN, Cl, Player, cl, D, C, Fd, NodeOut),
- print_dot_arg_nodes(Sm, Su, Cl, ClusterN, Player, D, C, 1, Fd, NodesOut).
-print_dot_arg_nodes([], [], _, _, _, _, _, _, _,[]).
-print_dot_arg_nodes([], [S|RestSu], _, ClusterN, Player, D, C, NodeN, Fd, [NodeOut,attack(Src,Targ)|NodesOut]) :-
+ print_dot_arg_node(0, ClusterN, Cl, Player, cl, D, C, NodeOut),
+ print_dot_arg_nodes(Sm, Su, Cl, ClusterN, Player, D, C, 1, NodesOut).
+print_dot_arg_nodes([], [], _, _, _, _, _, _, []).
+print_dot_arg_nodes([], [S|RestSu], _, ClusterN, Player, D, C, NodeN, [NodeOut,attack(Src,Targ)|NodesOut]) :-
  !,
- print_dot_arg_node(NodeN, ClusterN, S, Player, ums, D, C, Fd, NodeOut),
- format(Fd, '<attack>~n<source>s~w_~w</source>~n<target>s~w_0</target>~n</attack>~n', [ClusterN,NodeN,ClusterN]),
+ print_dot_arg_node(NodeN, ClusterN, S, Player, ums, D, C, NodeOut),
  format(atom(Src), 's~w_~w', [ClusterN,NodeN]),
  format(atom(Targ), 's~w_0', [ClusterN]),
  NodeN1 is NodeN + 1,
- print_dot_arg_nodes([], RestSu, _, ClusterN, Player, D, C, NodeN1, Fd, NodesOut).
-print_dot_arg_nodes([S|RestSm], Su, _, ClusterN, Player, D, C, NodeN, Fd, [NodeOut,attack(Src,Targ)|NodesOut]) :-
- print_dot_arg_node(NodeN, ClusterN, S, Player, ms, D, C, Fd, NodeOut),
- format(Fd, '<attack>~n<source>s~w_~w</source>~n<target>s~w_0</target>~n</attack>~n', [ClusterN,NodeN,ClusterN]),
+ print_dot_arg_nodes([], RestSu, _, ClusterN, Player, D, C, NodeN1, NodesOut).
+print_dot_arg_nodes([S|RestSm], Su, _, ClusterN, Player, D, C, NodeN, [NodeOut,attack(Src,Targ)|NodesOut]) :-
+ print_dot_arg_node(NodeN, ClusterN, S, Player, ms, D, C, NodeOut),
  format(atom(Src), 's~w_~w', [ClusterN,NodeN]),
  format(atom(Targ), 's~w_0', [ClusterN]),
  NodeN1 is NodeN + 1,
- print_dot_arg_nodes(RestSm, Su, _, ClusterN, Player, D, C, NodeN1, Fd, NodesOut).
+ print_dot_arg_nodes(RestSm, Su, _, ClusterN, Player, D, C, NodeN1, NodesOut).
 
 % TO BE PROVED
-print_dot_arg_node(0, 0, S, _, claim, _, _, Fd, node(Id,S,Type,claim)) :-
+print_dot_arg_node(0, 0, S, _, claim, _, _, node(Id,S,Type,claim)) :-
  !,
- format(Fd, '<node>~n<id>s~0_0</id>~n', []),
  format(atom(Id), 's~0_0', []), 
  (
   assumption(S)
   -> (graph_colour(proponent_asm_toBeProved, Colour) ,  Type = 'Asm')
   ;  (graph_colour(proponent_nonAsm_toBeProved, Colour), Type = 'nonAsm')
- ),
- format(Fd, '<name>~w</name>~n~w~n</node>~n', [S,Colour]).
+ ).
 % PROPONENT ARGUMENTS
-print_dot_arg_node(NodeN, ClusterN, S, proponent, _, _, _, Fd,node(Id,S,Type,Action)) :-
- format(Fd, '<node>~n<id>s~w_~w</id>~n ', [ClusterN,NodeN]),
+print_dot_arg_node(NodeN, ClusterN, S, proponent, _, _, _, node(Id,S,Type,Action)) :-
  format(atom(Id), 's~w_~w', [ClusterN,NodeN]), 
  (
   assumption(S)
   -> (graph_colour(proponent_asm, Colour), Type = 'Asm', Action = 'support')
   ;  (graph_colour(proponent_nonAsm, Colour), Type = 'nonAsm', Action = 'argument')
- ),
- format(Fd, '<name>~w</name>~n~w~n</node>~n', [S,Colour]).
+ ).
 % OPPONENT ARGUMENTS: CLAIM
-print_dot_arg_node(0, ClusterN, Claim, opponent, cl, _, _, Fd, node(Id,Claim,'nonAsm','argument')) :-
- format(Fd, '<node>~n<id>s~w_0</id>~n', [ClusterN]),
+print_dot_arg_node(0, ClusterN, Claim, opponent, cl, _, _, node(Id,Claim,'nonAsm','argument')) :-
  format(atom(Id), 's~w_0', [ClusterN]),
  graph_colour(opponent_ms_nonAsm, FillColour),
  graph_colour(opponent_ms_border, BorderCol),
- graph_colour(opponent_ms_nonAsm_text, Font),
- format(Fd, '<name>~w</name>~n~w~n</node>~n', [Claim,FillColour]).
+ graph_colour(opponent_ms_nonAsm_text, Font).
+
 % OPPONENT ARGUMENTS: MARKED SUPPORT
-print_dot_arg_node(NodeN, ClusterN, A, opponent, ms, D, C, Fd, node(Id,A,Type,Action)) :-
- format(Fd, '<node>~n<id>s~w_~w</id>~n', [ClusterN,NodeN]),
+print_dot_arg_node(NodeN, ClusterN, A, opponent, ms, D, C, node(Id,A,Type,Action)) :-
  format(atom(Id), 's~w_~w', [ClusterN,NodeN]),
  (
   % MARKED SUPPORT: CULPRIT
@@ -261,11 +248,9 @@ print_dot_arg_node(NodeN, ClusterN, A, opponent, ms, D, C, Fd, node(Id,A,Type,Ac
 	 Type = 'Asm', Action = 'support',
      graph_colour(opponent_ms_asm_text, Font)
  ),
- graph_colour(opponent_ms_border, BorderCol),
- format(Fd, '<name>~w</name>~n~w~n</node>~n', [A,FillColour]).
+ graph_colour(opponent_ms_border, BorderCol).
 % OPPONENT ARGUMENTS: UNMARKED SUPPORT
-print_dot_arg_node(NodeN, ClusterN, S, opponent, ums, D, C, Fd, node(Id,S,Type,Action)) :-
- format(Fd, '<node>~n<id>s~w_~w</id>~n', [ClusterN,NodeN]),
+print_dot_arg_node(NodeN, ClusterN, S, opponent, ums, D, C, node(Id,S,Type,Action)) :-
  format(atom(Id), 's~w_~w', [ClusterN,NodeN]),
  (
   assumption(S)
@@ -298,28 +283,26 @@ print_dot_arg_node(NodeN, ClusterN, S, opponent, ums, D, C, Fd, node(Id,S,Type,A
 	 Type = 'nonAsm', Action = 'argument',
      graph_colour(opponent_ums_nonAsm_border, Colour),
      graph_colour(opponent_ums_nonAsm_text, Font)
- ),
- format(Fd, '<name>~w</name>~n~w~n</node>~n', [S,FillColour]).
+ ).
 
-print_dot_attacks(L, Atts, Cl, ClusterN, ArgTurns, C, Fd, Output) :-
+print_dot_attacks(L, Atts, Cl, ClusterN, ArgTurns, C, Output) :-
  findall([AttClusterN,Sm], (member(L-LL, Atts),
                             member([LL,AttClusterN,_,Sm], ArgTurns)),
          AttClusterNs),
- print_dot_attacks_aux(AttClusterNs, Cl, ClusterN, C, Fd, Output).
+ print_dot_attacks_aux(AttClusterNs, Cl, ClusterN, C, Output).
 
-print_dot_attacks_aux([], _, _, _, _,[]).
-print_dot_attacks_aux([[AttClusterN,Sm]|RestAttClusterNs], Cl, ClusterN, C, Fd, Attacks) :-
+print_dot_attacks_aux([], _, _, _, []).
+print_dot_attacks_aux([[AttClusterN,Sm]|RestAttClusterNs], Cl, ClusterN, C, Attacks) :-
  (
   contrary(A, Cl),
   nth1(NodeN, Sm, A),
-  format(Fd, '<attack>~n<source>s~w_0</source>~n<target>s~w_~w</target>~n</attack>~n', [ClusterN,AttClusterN,NodeN]),
   fail
   ;
   true
  ),
  findall(X,(contrary(A,Cl),nth1(X, Sm, A)),Z),
  makeAttacks(Z,ClusterN, AttClusterN, AuxAttacks),
- print_dot_attacks_aux(RestAttClusterNs, Cl, ClusterN, C, Fd, RestAttacks),
+ print_dot_attacks_aux(RestAttClusterNs, Cl, ClusterN, C, RestAttacks),
  append(AuxAttacks,RestAttacks,Attacks).
 
  makeAttacks([],_,_,[]).
@@ -333,10 +316,10 @@ print_dot_attacks_aux([[AttClusterN,Sm]|RestAttClusterNs], Cl, ClusterN, C, Fd, 
 other_player(proponent, opponent).
 other_player(opponent, proponent).
 
-format_lines([], _).
-format_lines([Line|Rest], Fd) :-
- format(Fd, Line, []),
- format(Fd, '~n', []),
- format_lines(Rest, Fd).
+%format_lines([], _).
+%format_lines([Line|Rest], Fd) :-
+% format(Fd, Line, []),
+% format(Fd, '~n', []),
+% format_lines(Rest, Fd).
 
 

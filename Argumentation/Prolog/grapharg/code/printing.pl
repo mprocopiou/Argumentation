@@ -64,7 +64,7 @@ graph_colour(background,                        '#FFFFFF').
 graph_colour(proponent_justifications,          '#A2DDF3').
 graph_colour(proponent_asm_toBeProved,          '<type>Asm</type><action>claim</action>').
 graph_colour(proponent_asm,                     '<type>Asm</type><action>support</action>').
-graph_colour(proponent_nonAsm_toBeProved,       '<type>noAsm</type><action>claim</action>').
+graph_colour(proponent_nonAsm_toBeProved,       '<type>nonAsm</type><action>claim</action>').
 graph_colour(proponent_nonAsm,                  '<type>nonAsm</type><action>argument</action>').
 
 graph_colour(opponent_finished_justification,   '#CCCCCC').
