@@ -33,13 +33,16 @@ namespace Argumentation
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            build_graph();
+            string[] qstring = Request.QueryString["success"].Split(';');
+            string success = qstring[0];
+            if (success == "true")
+                build_graph();
         }
 
         protected void build_graph()
         {
             List<String> solutions = (List<String>)Session["Result"];
-            string[] qstring = Request.QueryString["engine"].Split(';');
+            string[] qstring = Request.QueryString["success"].Split(';');
             string engine = qstring[0];
             //string outputXml = qstring[1] + ".xml";
             string loadFile = "";

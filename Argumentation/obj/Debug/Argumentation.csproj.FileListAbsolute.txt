@@ -142,7 +142,6 @@ C:\Users\michael\Documents\Visual Studio 2012\Projects\Argumentation\Argumentati
 C:\Users\michael\Documents\Visual Studio 2012\Projects\Argumentation\Argumentation\bin\System.Web.Optimization.dll
 C:\Users\michael\Documents\Visual Studio 2012\Projects\Argumentation\Argumentation\bin\System.Web.Providers.dll
 C:\Users\michael\Documents\Visual Studio 2012\Projects\Argumentation\Argumentation\bin\WebGrease.dll
-C:\Users\michael\Documents\Visual Studio 2012\Projects\Argumentation\Argumentation\bin\Prolog\idealsemantics\proxdd\data\test.xml
 C:\Users\michael\Documents\Visual Studio 2012\Projects\Argumentation\Argumentation\bin\Prolog\idealsemantics\proxdd\code\filtering.pl
 C:\Users\michael\Documents\Visual Studio 2012\Projects\Argumentation\Argumentation\bin\Prolog\idealsemantics\proxdd\code\help.pl
 C:\Users\michael\Documents\Visual Studio 2012\Projects\Argumentation\Argumentation\bin\Prolog\idealsemantics\proxdd\code\printing.pl

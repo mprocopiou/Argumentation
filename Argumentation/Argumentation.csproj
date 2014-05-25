@@ -223,9 +223,6 @@
     <Content Include="Prolog\grapharg\data\toni6_2.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Prolog\idealsemantics\proxdd\data\test.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="Prolog\proxdd\code\test.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

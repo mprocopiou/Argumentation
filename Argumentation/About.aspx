@@ -1,6 +1,25 @@
 ﻿<%@ Page Title="About" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="About.aspx.cs" Inherits="Argumentation.About" %>
 <asp:Content runat="server" ID="BodyContent" ContentPlaceHolderID="MainContent">
     <div>
+        <asp:Repeater id="ErrorRepeater" runat="server">
+
+              <HeaderTemplate>
+                 <table border="1">
+              </HeaderTemplate>
+
+              <ItemTemplate>
+                 <tr>
+                    <td style="font-size:medium;color:red;"> <%# Container.DataItem %> </td>
+                 </tr>
+              </ItemTemplate>
+
+              <FooterTemplate>
+                 </table>
+              </FooterTemplate>
+
+        </asp:Repeater>
+     </div>
+    <div>
         <asp:TextBox Rows="10" TextMode="MultiLine" runat="server" id="framework"/>
     </div>
     <div>

@@ -13,10 +13,11 @@ namespace Parser
         public static Dictionary<string, HashSet<ProgramNode>> idb = new Dictionary<string, HashSet<ProgramNode>>();
         public static Dictionary<String, HashSet<Tuple<String, String>>> depGraph = new Dictionary<string, HashSet<Tuple<String, String>>>();
 
-        public static string startParsing(string input)
+        public static string startParsing(string input, out bool correctInput)
         {
             List<ProgramNode> program = new List<ProgramNode>();
             Grounder grounder = new Grounder();
+            correctInput = true;
             string prologInput = "";
             string errorMsg = "";
             string termRegex = @"[a-z]?[A-Za-z0-9]+\([A-Z][A-Za-z0-9]*(,[A-Z][A-Za-z0-9]*)*\)";
@@ -141,48 +142,56 @@ namespace Parser
                 }
                 else
                 {
-                    errorMsg = errorMsg + "Invalid statement: " + s + "\n";
+                    errorMsg = errorMsg + "Invalid statement: \"" + line + "\"\n";
+                    correctInput = false;
                 }
             }
-            Graph graphC = SCC.generateComponentGraph(depGraph);
-
-            List<HashSet<Node>> sccOrder = new List<HashSet<Node>>();
-            sccOrder = deriveOrdering(graphC);
-
-            List<ProgramNode> groundedProgram = Grounder.instantiate(graphC, program, sccOrder, edb);
-            foreach (var rule in groundedProgram)
+            if (correctInput)
             {
-                string headVars;
-                if (rule.variables != null)
+                Graph graphC = SCC.generateComponentGraph(depGraph);
+
+                List<HashSet<Node>> sccOrder = new List<HashSet<Node>>();
+                sccOrder = deriveOrdering(graphC);
+
+                List<ProgramNode> groundedProgram = Grounder.instantiate(graphC, program, sccOrder, edb);
+                foreach (var rule in groundedProgram)
                 {
-                    headVars = String.Format("({0})", String.Join(",", rule.variables));
-                }
-                else
-                {
-                    headVars = "";
-                }
-                string head = String.Format("{0}{1}", rule.id, headVars);
-                Rule tempRule = (Rule)rule;
-                List<String> predList = new List<String>();
-                foreach (var pred in tempRule.predicates)
-                {
-                    string predString;
+                    string headVars;
                     if (rule.variables != null)
                     {
-                        predString = String.Format("({0})", String.Join(",", pred.variables));
+                        headVars = String.Format("({0})", String.Join(",", rule.variables));
                     }
                     else
                     {
-                        predString = "";
+                        headVars = "";
                     }
-                    predString = pred.id + predString;
-                    predList.Add(predString);
+                    string head = String.Format("{0}{1}", rule.id, headVars);
+                    Rule tempRule = (Rule)rule;
+                    List<String> predList = new List<String>();
+                    foreach (var pred in tempRule.predicates)
+                    {
+                        string predString;
+                        if (rule.variables != null)
+                        {
+                            predString = String.Format("({0})", String.Join(",", pred.variables));
+                        }
+                        else
+                        {
+                            predString = "";
+                        }
+                        predString = pred.id + predString;
+                        predList.Add(predString);
+                    }
+                    String preds = String.Join(",", predList);
+                    string line = String.Format("myRule({0}, [{1}]).\n", head, preds);
+                    prologInput = prologInput + line;
                 }
-                String preds = String.Join(",", predList);
-                string line = String.Format("myRule({0}, [{1}]).\n", head, preds);
-                prologInput = prologInput + line;
+                return prologInput;
             }
-            return prologInput;
+            else
+            {
+                return errorMsg;
+            }
         }
 
         private static string[][] getDomain(string[] vars, Dictionary<string, string[]> parsedDomain)
