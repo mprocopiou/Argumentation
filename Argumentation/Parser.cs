@@ -13,7 +13,7 @@ namespace Parser
         public static Dictionary<string, HashSet<ProgramNode>> idb = new Dictionary<string, HashSet<ProgramNode>>();
         public static Dictionary<String, HashSet<Tuple<String, String>>> depGraph = new Dictionary<string, HashSet<Tuple<String, String>>>();
 
-        public static string startParsing(string input, out bool correctInput)
+        public static string startParsing(string input, string claim, out bool correctInput)
         {
             List<ProgramNode> program = new List<ProgramNode>();
             Grounder grounder = new Grounder();
@@ -154,6 +154,12 @@ namespace Parser
                 sccOrder = deriveOrdering(graphC);
 
                 List<ProgramNode> groundedProgram = Grounder.instantiate(graphC, program, sccOrder, edb);
+                // Checking whether claim is  a valid claim once program is grounded.
+                if(!checkValidityOfClaim(edb, groundedProgram, claim)) {
+                    errorMsg = "The claim specified does not exist in the framework.";
+                    correctInput = false;
+                    return errorMsg;
+                }
                 foreach (var rule in groundedProgram)
                 {
                     string headVars;
@@ -192,6 +198,37 @@ namespace Parser
             {
                 return errorMsg;
             }
+        }
+
+        private static bool checkValidityOfClaim(Dictionary<string, HashSet<ProgramNode>> edb, List<ProgramNode> groundedProgram, string claim)
+        {
+            string[] claimParsed = claim.Split(new char[] {'(',')'},StringSplitOptions.RemoveEmptyEntries);
+            string id = claimParsed[0];
+            string vars = claimParsed[1];
+            try
+            {
+                if (edb.ContainsKey(id))
+                {
+                    foreach (var node in edb[id])
+                    {
+                        if (node.id == id && String.Join(",", node.variables) == vars)
+                            return true;
+                    }
+                }
+                else
+                {
+                    foreach (var node in groundedProgram)
+                    {
+                        if (node.id == id && String.Join(",", node.variables) == vars)
+                            return true;
+                    }
+                }
+            }
+            catch
+            {
+                return false;
+            }            
+            return false;
         }
 
         private static string[][] getDomain(string[] vars, Dictionary<string, string[]> parsedDomain)

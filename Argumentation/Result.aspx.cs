@@ -60,7 +60,7 @@ namespace Argumentation
             Session["Input"] = framework.Text;
             Session["Claim"] = claim.Text;
             bool errorFlag = false;
-            string testOutput = Parser.Parser.startParsing(testingParser, out errorFlag);
+            string testOutput = Parser.Parser.startParsing(testingParser, claim.Text, out errorFlag);
             // TODO might need to change these when grounder is added.
             string termString = System.Text.RegularExpressions.Regex.Replace(testOutput, @"\s", "");
             string termList = termString.Replace('.', ',');

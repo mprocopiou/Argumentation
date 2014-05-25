@@ -91,7 +91,7 @@ namespace Argumentation
             Session["Input"] = framework.Text;
             Session["Claim"] = claim.Text;
             bool correctInput = true;            
-            string testOutput = Parser.Parser.startParsing(testingParser, out correctInput);
+            string testOutput = Parser.Parser.startParsing(testingParser, claim.Text, out correctInput);
 
             if (!correctInput)
             {
