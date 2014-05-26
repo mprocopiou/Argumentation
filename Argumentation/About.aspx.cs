@@ -125,32 +125,7 @@ namespace Argumentation
                 List<String> solution = new List<string>();
                 try
                 {
-                    if (!PlEngine.IsInitialized)
-                    {
-                        bool test = File.Exists(dir);
-                        String[] param = { "-q", "-f", runProlog };  // suppressing informational and banner messages
-                        PlEngine.Initialize(param);
-
-                        using (PlQuery q = new PlQuery("loads(" + termList + "),sxdd(" + claim.Text + ",X,Y)"))
-                        {
-                            int idx = 0;
-                            foreach (PlQueryVariables v in q.SolutionVariables)
-                            {
-                                solution.Add(v["Y"].ToString());
-                            }
-                        }
-
-                        ////using (PlQuery q = new PlQuery("sxdd(p,X)"))
-                        //using (PlQuery q = new PlQuery("loadf(" + filename.Remove(filename.Length -3) + "),sxdd(" + claim.Text + ",X,Y)"))                
-                        //{
-                        //    int idx = 0;
-                        //    foreach (PlQueryVariables v in q.SolutionVariables)
-                        //    {
-                        //        solution.Add(v["Y"].ToString());
-                        //    }
-                        //}
-                        PlEngine.PlCleanup();
-                    }
+                    runProxddEngine(dir, termList, runProlog, solution);
                 }
                 catch { }
                 if (solution.Count > 0)
@@ -171,6 +146,36 @@ namespace Argumentation
                 //process.WaitForExit();                        
             }
             
+        }
+
+        private void runProxddEngine(string dir, string termList, string runProlog, List<String> solution)
+        {
+            if (!PlEngine.IsInitialized)
+            {
+                bool test = File.Exists(dir);
+                String[] param = { "-q", "-f", runProlog };  // suppressing informational and banner messages
+                PlEngine.Initialize(param);
+
+                using (PlQuery q = new PlQuery("loads(" + termList + "),sxdd(" + claim.Text + ",X,Y)"))
+                {
+                    int idx = 0;
+                    foreach (PlQueryVariables v in q.SolutionVariables)
+                    {
+                        solution.Add(v["Y"].ToString());
+                    }
+                }
+
+                ////using (PlQuery q = new PlQuery("sxdd(p,X)"))
+                //using (PlQuery q = new PlQuery("loadf(" + filename.Remove(filename.Length -3) + "),sxdd(" + claim.Text + ",X,Y)"))                
+                //{
+                //    int idx = 0;
+                //    foreach (PlQueryVariables v in q.SolutionVariables)
+                //    {
+                //        solution.Add(v["Y"].ToString());
+                //    }
+                //}
+                PlEngine.PlCleanup();
+            }
         }
 
         private void printErrors(List<String> errorList)
