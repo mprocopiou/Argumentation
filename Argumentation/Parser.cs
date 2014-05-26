@@ -15,6 +15,9 @@ namespace Parser
 
         public static string startParsing(string input, string claim, out bool correctInput)
         {
+            depGraph = new Dictionary<string, HashSet<Tuple<string, string>>>();
+            edb = new Dictionary<string, HashSet<ProgramNode>>();
+            idb = new Dictionary<string, HashSet<ProgramNode>>();
             List<ProgramNode> program = new List<ProgramNode>();
             Grounder grounder = new Grounder();
             correctInput = true;
@@ -148,10 +151,30 @@ namespace Parser
             }
             if (correctInput)
             {
-                Graph graphC = SCC.generateComponentGraph(depGraph);
+                SCC.flushSCC();
+                Graph graphC = new Graph();
+                try
+                {
+                    graphC = SCC.generateComponentGraph(depGraph);
+                }
+                catch
+                {
+                    correctInput = false;
+                    errorMsg = "Generating Component Graph Failed";
+                    return errorMsg;
+                }
 
                 List<HashSet<Node>> sccOrder = new List<HashSet<Node>>();
-                sccOrder = deriveOrdering(graphC);
+                try
+                {
+                    sccOrder = deriveOrdering(graphC);
+                }
+                catch
+                {
+                    correctInput = false;
+                    errorMsg = "Generating Ordering of SCC failed.";
+                    return errorMsg;
+                }
 
                 List<ProgramNode> groundedProgram = Grounder.instantiate(graphC, program, sccOrder, edb);
                 // Checking whether claim is  a valid claim once program is grounded.

@@ -32,6 +32,9 @@ namespace Parser
             this.nodes = nodes;
             this.edges = edges;
         }
+
+        public Graph()
+        { }
     }
 
     class SCC
@@ -136,6 +139,16 @@ namespace Parser
                 return component;
             }
             return null;
+        }
+
+        public static void flushSCC()
+        {
+            index = 0;
+            S = new Stack<Node>();
+            edges = new HashSet<Tuple<string, string>>();
+            nodes = new Dictionary<String,Node>();
+            nodesC = new HashSet<HashSet<Node>>();
+            edgesC = new HashSet<Tuple<HashSet<Node>, HashSet<Node>>>();
         }
     }
 }
