@@ -11,13 +11,14 @@ namespace Parser
     {
         public static Dictionary<String, HashSet<ProgramNode>> edb = new Dictionary<string, HashSet<ProgramNode>>();
         public static Dictionary<string, HashSet<ProgramNode>> idb = new Dictionary<string, HashSet<ProgramNode>>();
+        public static Dictionary<String, String> assumdb = new Dictionary<string, string>();
+        public static HashSet<String> factdb = new HashSet<string>();
         public static Dictionary<String, HashSet<Tuple<String, String>>> depGraph = new Dictionary<string, HashSet<Tuple<String, String>>>();
 
         public static string startParsing(string input, string claim, out bool correctInput)
         {
-            depGraph = new Dictionary<string, HashSet<Tuple<string, string>>>();
-            edb = new Dictionary<string, HashSet<ProgramNode>>();
-            idb = new Dictionary<string, HashSet<ProgramNode>>();
+            flushDbs();
+
             List<ProgramNode> program = new List<ProgramNode>();
             Grounder grounder = new Grounder();
             correctInput = true;
@@ -32,6 +33,134 @@ namespace Parser
             //string test = "b(X,A)<-[a(X,A)].asm(a(X,Y),bfg(Y)){X=1,2,3;Y=2,3;}.c(X,Y,Z)<-[]{X=1,2,3;Y=2,3,4;Z=Michael,George,John;";
             string test = input;
             string[] split = test.Split(new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
+            // Parse the CFG and return if input was correct, the Prolog Input so far or the error message so far.
+            parseCFG(ref correctInput, program, ref prologInput, ref errorMsg, termRegex, split);
+            if (correctInput)
+            {
+                SCC.flushSCC();
+                Graph graphC = new Graph();
+                try
+                {
+                    graphC = SCC.generateComponentGraph(depGraph);
+                }
+                catch
+                {
+                    correctInput = false;
+                    errorMsg = "Generating Component Graph Failed";
+                    return errorMsg;
+                }
+
+                List<HashSet<Node>> sccOrder = new List<HashSet<Node>>();
+                try
+                {
+                    sccOrder = deriveOrdering(graphC);
+                }
+                catch
+                {
+                    correctInput = false;
+                    errorMsg = "Generating Ordering of SCC failed.";
+                    return errorMsg;
+                }
+
+                // Grounding framework.
+                List<ProgramNode> groundedProgram = Grounder.instantiate(graphC, program, sccOrder, edb);
+
+                // Checking whether claim is  a valid claim once program is grounded.
+                if(!checkValidityOfClaim(edb, groundedProgram, claim)) {
+                    errorMsg = "The claim specified does not exist in the framework.";
+                    correctInput = false;
+                    return errorMsg;
+                }
+
+                prologInput = generateProxddInput(prologInput, groundedProgram);
+                return prologInput;
+            }
+            else
+            {
+                return errorMsg;
+            }
+        }
+
+        private static string generateProxddInput(string prologInput, List<ProgramNode> groundedProgram)
+        {
+            prologInput = "" + generateAssumsConts();
+
+            prologInput = prologInput + generateFacts();
+
+            prologInput = prologInput + generateRules(prologInput, groundedProgram);
+
+            return prologInput;
+        }
+
+        private static string generateRules(string prologInput, List<ProgramNode> groundedProgram)
+        {
+            foreach (var rule in groundedProgram)
+            {
+                string headVars;
+                if (rule.variables != null)
+                {
+                    headVars = String.Format("({0})", String.Join(",", rule.variables));
+                }
+                else
+                {
+                    headVars = "";
+                }
+                string head = String.Format("{0}{1}", rule.id, headVars);
+                Rule tempRule = (Rule)rule;
+                List<String> predList = new List<String>();
+                foreach (var pred in tempRule.predicates)
+                {
+                    string predString;
+                    if (rule.variables != null)
+                    {
+                        predString = String.Format("({0})", String.Join(",", pred.variables));
+                    }
+                    else
+                    {
+                        predString = "";
+                    }
+                    predString = pred.id + predString;
+                    predList.Add(predString);
+                }
+                String preds = String.Join(",", predList);
+                string line = String.Format("myRule({0}, [{1}]).\n", head, preds);
+                prologInput = prologInput + line;
+            }
+            return prologInput;
+        }
+
+        private static string generateFacts()
+        {
+            string prologInput = "";
+            foreach (var fact in factdb)
+            {
+                prologInput = prologInput + String.Format("myRule({0}, []).\nh", fact);
+            }
+            return prologInput;
+        }
+
+        private static string generateAssumsConts()
+        {
+            string prologInput = "";
+            foreach (var assum in assumdb.Keys)
+            {
+                prologInput = prologInput + String.Format("myAsm({0}).\n", assum);
+                prologInput = prologInput + String.Format("contrary({0},{1}).\n", assum, assumdb[assum]);
+            }
+            return prologInput;
+        }
+
+        private static void flushDbs()
+        {
+            depGraph = new Dictionary<string, HashSet<Tuple<string, string>>>();
+            edb = new Dictionary<string, HashSet<ProgramNode>>();
+            idb = new Dictionary<string, HashSet<ProgramNode>>();
+            assumdb = new Dictionary<string, string>();
+            factdb = new HashSet<string>();
+        }
+
+        private static void parseCFG(ref bool correctInput, List<ProgramNode> program, ref string prologInput, ref string errorMsg, string termRegex, string[] split)
+        {
             foreach (string s in split)
             {
                 string line = System.Text.RegularExpressions.Regex.Replace(s, @"\s", "");
@@ -73,7 +202,7 @@ namespace Parser
                     createCombinations(varsDomain, vars.Length - 1, new string[vars.Length], varsCombs);
 
 
-                    output = addToEDB(varsCombs, assumptionProps, contraryProps, assumptionVars, contraryVars, vars);
+                    addToEDB(varsCombs, assumptionProps, contraryProps, assumptionVars, contraryVars, vars);
                     // TODO DELETE CODE BELOW WHEN SURE ITS OK.
                     //string[][] fulldomain = new string[2][];
                     //string[] variable = tokens[1].Split(',');
@@ -106,7 +235,7 @@ namespace Parser
                     List<String[]> varsCombs = new List<String[]>();
                     createCombinations(varsDomain, head.variables.Length - 1, new string[head.variables.Length], varsCombs);
 
-                    output = addToEDB(varsCombs, head);
+                    addToEDB(varsCombs, head);
 
                     prologInput = prologInput + output;
                 }
@@ -140,7 +269,7 @@ namespace Parser
                         idb.Add(ruleObj.id, ruleTemp);
                     }
                     program.Add(ruleObj);
-                    string output = String.Format("myRule({0}, [{1}]).\n", rule, tokens[1]);
+                   // TO BE DELETED string output = String.Format("myRule({0}, [{1}]).\n", rule, tokens[1]);
                     //    prologInput = prologInput + output;
                 }
                 else
@@ -148,78 +277,6 @@ namespace Parser
                     errorMsg = errorMsg + "Invalid statement: \"" + line + "\"\n";
                     correctInput = false;
                 }
-            }
-            if (correctInput)
-            {
-                SCC.flushSCC();
-                Graph graphC = new Graph();
-                try
-                {
-                    graphC = SCC.generateComponentGraph(depGraph);
-                }
-                catch
-                {
-                    correctInput = false;
-                    errorMsg = "Generating Component Graph Failed";
-                    return errorMsg;
-                }
-
-                List<HashSet<Node>> sccOrder = new List<HashSet<Node>>();
-                try
-                {
-                    sccOrder = deriveOrdering(graphC);
-                }
-                catch
-                {
-                    correctInput = false;
-                    errorMsg = "Generating Ordering of SCC failed.";
-                    return errorMsg;
-                }
-
-                List<ProgramNode> groundedProgram = Grounder.instantiate(graphC, program, sccOrder, edb);
-                // Checking whether claim is  a valid claim once program is grounded.
-                if(!checkValidityOfClaim(edb, groundedProgram, claim)) {
-                    errorMsg = "The claim specified does not exist in the framework.";
-                    correctInput = false;
-                    return errorMsg;
-                }
-                foreach (var rule in groundedProgram)
-                {
-                    string headVars;
-                    if (rule.variables != null)
-                    {
-                        headVars = String.Format("({0})", String.Join(",", rule.variables));
-                    }
-                    else
-                    {
-                        headVars = "";
-                    }
-                    string head = String.Format("{0}{1}", rule.id, headVars);
-                    Rule tempRule = (Rule)rule;
-                    List<String> predList = new List<String>();
-                    foreach (var pred in tempRule.predicates)
-                    {
-                        string predString;
-                        if (rule.variables != null)
-                        {
-                            predString = String.Format("({0})", String.Join(",", pred.variables));
-                        }
-                        else
-                        {
-                            predString = "";
-                        }
-                        predString = pred.id + predString;
-                        predList.Add(predString);
-                    }
-                    String preds = String.Join(",", predList);
-                    string line = String.Format("myRule({0}, [{1}]).\n", head, preds);
-                    prologInput = prologInput + line;
-                }
-                return prologInput;
-            }
-            else
-            {
-                return errorMsg;
             }
         }
 
@@ -352,11 +409,11 @@ namespace Parser
             }
         }
 
-        public static String addToEDB(List<string[]> combinations, string[] assumptionProps, string[] contraryProps, string[] assumptionVars, string[] contraryVars, string[] vars)
+        public static void addToEDB(List<string[]> combinations, string[] assumptionProps, string[] contraryProps, string[] assumptionVars, string[] contraryVars, string[] vars)
         {
-            string combString = "";
             string assumptionID = assumptionProps[0];
             string contraryID = contraryProps[0];
+        
             foreach (var comb in combinations)
             {
                 int index = 0;
@@ -386,46 +443,38 @@ namespace Parser
                 Assumption assumption = new Assumption();
                 assumption.id = assumptionID;
                 assumption.variables = assumComb;
-                string assumString = String.Format("myAsm({0}({1})).\n", assumption.id, String.Join(",", assumption.variables));
+                string assumString = String.Format(@"{0}({1})", assumption.id, String.Join(",", assumption.variables));
 
                 Assumption contrary = new Assumption();
                 contrary.id = contraryID;
                 contrary.variables = contComb;
-                string contString = String.Format("contrary({0}({1}),{2}({3})).\n", assumption.id, String.Join(",", assumption.variables), contrary.id, String.Join(",", contrary.variables));
+                string contString = String.Format(@"{0}({1})", contrary.id, String.Join(",", contrary.variables));
 
+                assumdb.Add(assumString, contString);
 
                 if (edb.ContainsKey(assumptionID))
                 {
                     HashSet<ProgramNode> existAsm = edb[assumptionID];
                     existAsm.Add(assumption);
                     edb[assumptionID] = existAsm;
-
-                    HashSet<ProgramNode> existCont = edb[contraryID];
-                    existCont.Add(contrary);
-                    edb[contraryID] = existCont;
                 }
                 else
                 {
                     HashSet<ProgramNode> newAsm = new HashSet<ProgramNode>();
                     newAsm.Add(assumption);
                     edb.Add(assumptionID, newAsm);
-
-                    HashSet<ProgramNode> newCont = new HashSet<ProgramNode>();
-                    newCont.Add(contrary);
-                    edb.Add(contraryID, newCont);
-                }
-                combString = combString + assumString + contString;
+                }                
             }
-            return combString;
         }
 
-        private static string addToEDB(List<string[]> combinations, Literal head)
+        private static void addToEDB(List<string[]> combinations, Literal head)
         {
-            string combString = "";
             foreach (var comb in combinations)
             {
                 Rule ruleObj = new Rule(head.id, null, comb);
-                string ruleString = String.Format("myRule({0}({1}), []).\nh", head.id, String.Join(",", comb));
+                string ruleString = String.Format(@"{0}({1})", head.id, String.Join(",", comb));
+
+                factdb.Add(ruleString);
 
                 if (edb.ContainsKey(head.id))
                 {
@@ -439,9 +488,7 @@ namespace Parser
                     newRule.Add(ruleObj);
                     edb.Add(head.id, newRule);
                 }
-                combString = combString + ruleString;
             }
-            return combString;
         }
 
         public static Dictionary<String, String[]> parseDomain(string domain)
