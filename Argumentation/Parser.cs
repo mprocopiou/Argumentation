@@ -32,6 +32,7 @@ namespace Parser
             //string test = "b(X)<-[] {X=1,2,3,4;}.";
             //string test = "b(X,A)<-[a(X,A)].asm(a(X,Y),bfg(Y)){X=1,2,3;Y=2,3;}.c(X,Y,Z)<-[]{X=1,2,3;Y=2,3,4;Z=Michael,George,John;";
             string test = input;
+            test = System.Text.RegularExpressions.Regex.Replace(input, @"\s", "");
             string[] split = test.Split(new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
             // Parse the CFG and return if input was correct, the Prolog Input so far or the error message so far.
             parseCFG(ref correctInput, program, ref prologInput, ref errorMsg, termRegex, split);
