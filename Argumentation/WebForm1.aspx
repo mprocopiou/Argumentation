@@ -69,15 +69,26 @@
                 .attr("class", function (d) { return "link " + lines(d.group); })
                 .style("stroke-width", function (d) { return Math.sqrt(d.value); });
 
-            var node = svg.selectAll(".node")
+            var node = svg.selectAll("nodeX")
                 .data(nodesData)
-              .enter().append("path")
-                .attr("class", "node")
+                .enter().append("g")
+                .attr("class", "nodeX");
+
+            node.append("path")
                 .attr("d", d3.svg.symbol().type(function (d) { return d3.svg.symbolTypes[d.shape]; }))
                 .style("fill", function (d) { return color(d.group); })
                 .call(force.drag);
 
             node.append("title")
+                .text(function (d) { return d.name; });
+
+            node.append("text")
+                .attr("y",-7)
+                .attr("text-anchor", "middle")
+                .attr("font-size", "8px")
+                .attr("font-family","sans-serif")
+                .style("fill-opacity",1)
+                .attr("fill","black")
                 .text(function (d) { return d.name; });
 
             force.on("tick", tick);
