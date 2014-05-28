@@ -1,10 +1,63 @@
 ﻿<%@ Page Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Result.aspx.cs" Inherits="Argumentation.Result" %>
 
 <asp:Content runat="server" ID="BodyContent" ContentPlaceHolderID="MainContent">
+    <script type="text/javascript">
+        function showGroundPanel(myBtn) {            
+            var groundedBox = document.getElementById('<%=groundedProgramBox.ClientID %>');
+            groundedBox.style.display = "block";
+
+            var hideBtn = document.getElementById('<%=hideGroundedBtn.ClientID %>');
+            hideBtn.style.display = "block";
+
+            myBtn.style.display = "none";
+
+            return false;
+        }
+
+        function hideGroundPanel(myBtn) {
+            var groundedBox = document.getElementById('<%=groundedProgramBox.ClientID %>');
+            groundedBox.style.display = "none";
+
+            var showBtn = document.getElementById('<%=showGroundedBtn.ClientID %>');
+            showBtn.style.display = "block";
+
+            myBtn.style.display = "none";
+
+            return false;
+        }
+</script>
     <asp:Label runat="server" ID="SolutionNotFound" Visible="false" Text="No Solution was found for the claim." Font-Size="Large" ForeColor="Red"></asp:Label>
     <iframe src="WebForm1.aspx?success=<%= Request.QueryString["success"] %>" width = 960 height = 500 scrolling="no" style="border:solid; background: #FFFFFF"></iframe>    
+     <div>
+        <asp:Repeater id="ErrorRepeater" runat="server">
+
+              <HeaderTemplate>
+                 <table border="1">
+              </HeaderTemplate>
+
+              <ItemTemplate>
+                 <tr>
+                    <td style="font-size:medium;color:red;"> <%# Container.DataItem %> </td>
+                 </tr>
+              </ItemTemplate>
+
+              <FooterTemplate>
+                 </table>
+              </FooterTemplate>
+
+        </asp:Repeater>
+     </div>
     <div>
         <asp:TextBox Rows="10" TextMode="MultiLine" runat="server" id="framework"/>
+    </div>
+    <div>
+        <asp:TextBox Rows="10"  ReadOnly="true" TextMode="MultiLine" runat="server" id="groundedProgramBox" style="display:none;"/>
+    </div>
+    <div>
+        <asp:Button runat="server" ID="showGroundedBtn" OnClientClick="return showGroundPanel(this);" Text="Show Grounded" />  
+    </div>
+    <div>
+        <asp:Button runat="server" ID="hideGroundedBtn" OnClientClick="return hideGroundPanel(this);" Text="Hide Grounded" style="display:none;"/>  
     </div>
     <div>
         <asp:TextBox runat="server" id="claim"/>

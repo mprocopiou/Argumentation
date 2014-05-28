@@ -22,6 +22,15 @@ namespace Argumentation {
         protected global::System.Web.UI.WebControls.Label SolutionNotFound;
         
         /// <summary>
+        /// ErrorRepeater control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Repeater ErrorRepeater;
+        
+        /// <summary>
         /// framework control.
         /// </summary>
         /// <remarks>
@@ -29,6 +38,33 @@ namespace Argumentation {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox framework;
+        
+        /// <summary>
+        /// groundedProgramBox control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox groundedProgramBox;
+        
+        /// <summary>
+        /// showGroundedBtn control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button showGroundedBtn;
+        
+        /// <summary>
+        /// hideGroundedBtn control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button hideGroundedBtn;
         
         /// <summary>
         /// claim control.

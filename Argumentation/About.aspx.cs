@@ -90,9 +90,10 @@ namespace Argumentation
             //Cache Input.
             Session["Input"] = framework.Text;
             Session["Claim"] = claim.Text;
-            bool correctInput = true;            
-            string testOutput = Parser.Parser.startParsing(testingParser, claim.Text, out correctInput);
-
+            bool correctInput = true;
+            string groundedProgramStr = "";
+            string testOutput = Parser.Parser.startParsing(testingParser, claim.Text, out correctInput, out groundedProgramStr);
+            Session["GroundedProg"] = groundedProgramStr;
             if (!correctInput)
             {
                 List<String> errorList = new List<String>();

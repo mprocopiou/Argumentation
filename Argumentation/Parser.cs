@@ -15,13 +15,14 @@ namespace Parser
         public static HashSet<String> factdb = new HashSet<string>();
         public static Dictionary<String, HashSet<Tuple<String, String>>> depGraph = new Dictionary<string, HashSet<Tuple<String, String>>>();
 
-        public static string startParsing(string input, string claim, out bool correctInput)
+        public static string startParsing(string input, string claim, out bool correctInput, out string groundedProgramStr)
         {
             flushDbs();
 
             List<ProgramNode> program = new List<ProgramNode>();
             Grounder grounder = new Grounder();
             correctInput = true;
+            groundedProgramStr = "";
             string prologInput = "";
             string errorMsg = "";
             string termRegex = @"[a-z]?[A-Za-z0-9]+\([A-Z][A-Za-z0-9]*(,[A-Z][A-Za-z0-9]*)*\)";
@@ -72,7 +73,7 @@ namespace Parser
                     correctInput = false;
                     return errorMsg;
                 }
-
+                groundedProgramStr = generateGroundedCFG(groundedProgramStr, groundedProgram);
                 prologInput = generateProxddInput(prologInput, groundedProgram);
                 return prologInput;
             }
@@ -82,19 +83,89 @@ namespace Parser
             }
         }
 
+        private static string generateGroundedCFG(string groundedProgramStr, List<ProgramNode> groundedProgram)
+        {
+            groundedProgramStr = "" + generateAssumsContsCFG();
+
+            groundedProgramStr = groundedProgramStr + generateFactsCFG();
+
+            groundedProgramStr = groundedProgramStr + generateRulesCFG(groundedProgram);
+
+            return groundedProgramStr;
+        }
+
+        private static string generateAssumsContsCFG()
+        {
+            string groundedProgramStr = "";
+            foreach (var assum in assumdb.Keys)
+            {
+                groundedProgramStr = groundedProgramStr + String.Format("asm({0},{1}).\n", assum, assumdb[assum]);
+            }
+            return groundedProgramStr;
+        }
+
+        private static string generateFactsCFG()
+        {
+            string groundedProgramStr = "";
+            foreach (var fact in factdb)
+            {
+                groundedProgramStr = groundedProgramStr + String.Format("{0}<-[].\n", fact);
+            }
+            return groundedProgramStr;
+        }
+
+        private static string generateRulesCFG(List<ProgramNode> groundedProgram)
+        {
+            string groundedProgramStr = "";
+            foreach (var rule in groundedProgram)
+            {
+                string headVars;
+                if (rule.variables != null)
+                {
+                    headVars = String.Format("({0})", String.Join(",", rule.variables));
+                }
+                else
+                {
+                    headVars = "";
+                }
+                string head = String.Format("{0}{1}", rule.id, headVars);
+                Rule tempRule = (Rule)rule;
+                List<String> predList = new List<String>();
+                foreach (var pred in tempRule.predicates)
+                {
+                    string predString;
+                    if (rule.variables != null)
+                    {
+                        predString = String.Format("({0})", String.Join(",", pred.variables));
+                    }
+                    else
+                    {
+                        predString = "";
+                    }
+                    predString = pred.id + predString;
+                    predList.Add(predString);
+                }
+                String preds = String.Join(",", predList);
+                string line = String.Format("{0}<-[{1}].\n", head, preds);
+                groundedProgramStr = groundedProgramStr + line;
+            }
+            return groundedProgramStr;
+        }
+
         private static string generateProxddInput(string prologInput, List<ProgramNode> groundedProgram)
         {
             prologInput = "" + generateAssumsConts();
 
             prologInput = prologInput + generateFacts();
 
-            prologInput = prologInput + generateRules(prologInput, groundedProgram);
+            prologInput = prologInput + generateRules(groundedProgram);
 
             return prologInput;
         }
 
-        private static string generateRules(string prologInput, List<ProgramNode> groundedProgram)
+        private static string generateRules(List<ProgramNode> groundedProgram)
         {
+            string prologInput = "";
             foreach (var rule in groundedProgram)
             {
                 string headVars;
@@ -135,7 +206,7 @@ namespace Parser
             string prologInput = "";
             foreach (var fact in factdb)
             {
-                prologInput = prologInput + String.Format("myRule({0}, []).\nh", fact);
+                prologInput = prologInput + String.Format("myRule({0}, []).\n", fact);
             }
             return prologInput;
         }

@@ -16,10 +16,19 @@ namespace Argumentation
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            if(Request.QueryString["success"]=="false")
-                SolutionNotFound.Visible=true;
-            framework.Text = (String)Session["Input"];
-            claim.Text = (String)Session["Claim"];
+            if (!IsPostBack)
+            {
+                if (Request.QueryString["success"] == "false")
+                    SolutionNotFound.Visible = true;
+                framework.Text = (String)Session["Input"];
+                claim.Text = (String)Session["Claim"];
+                groundedProgramBox.Text = (String)Session["GroundedProg"];
+                if (Session["Error"] != null)
+                {
+                    printErrors((List<String>)Session["Error"]);
+                }
+                Session["Error"] = null;
+            }
         }
 
         protected void Submit_Click(object sender, System.EventArgs e)
@@ -59,52 +68,69 @@ namespace Argumentation
             //Cache Input.
             Session["Input"] = framework.Text;
             Session["Claim"] = claim.Text;
-            bool errorFlag = false;
-            string testOutput = Parser.Parser.startParsing(testingParser, claim.Text, out errorFlag);
-            // TODO might need to change these when grounder is added.
-            string termString = System.Text.RegularExpressions.Regex.Replace(testOutput, @"\s", "");
-            string termList = termString.Replace('.', ',');
-            termList = "[" + termList.TrimEnd(',') + "]";
+            bool correctInput = true;
+            string groundedProgramStr;
+            string testOutput = Parser.Parser.startParsing(testingParser, claim.Text, out correctInput, out groundedProgramStr);
 
-            string runProlog = "";
-            // TODO possibly redundant Engine check because of dir being assigned above.
-            if (Admissible.Checked & Proxdd.Checked)
-                runProlog = dir + @"code\runAb.pl";
-            else if (Grounded.Checked & Proxdd.Checked)
-                runProlog = dir + @"code\runGb.pl";
-            else if (Admissible.Checked & Grapharg.Checked)
-                runProlog = dir + @"code\runAb.pl";
-            else if (Grounded.Checked & Grapharg.Checked)
-                runProlog = dir + @"code\runGb.pl";
-            else if (Ideal.Checked & Proxdd.Checked)
-                runProlog = dir + @"code\runIb.pl";
-            //TODO might need to wrap up Engine in try catch.
-            //Environment.SetEnvironmentVariable("SWI_HOME_DIR", @"C:\Program Files (x86)\swipl\boot32.prc");  // or boot64.prc
-            //string testVar = Environment.GetEnvironmentVariable("SWI_HOME_DIR");  // or boot64.prc
-            List<String> solution = new List<string>();
-            try
+            if (!correctInput)
             {
-                runProxddEngine(dir, termList, runProlog, solution);
-            }
-            catch { }
-            if (solution.Count > 0)
-            {
-                Session["Result"] = solution;
-                Response.Redirect(String.Format("Result.aspx?success=true"));
+                List<String> errorList = new List<String>();
+                errorList = testOutput.Split(new char[] { '\n' }, StringSplitOptions.RemoveEmptyEntries).ToList<String>();
+                Session["Error"] = errorList;
+                Response.Redirect(String.Format("Result.aspx?"));
             }
             else
             {
-                Response.Redirect(String.Format("Result.aspx?success=false"));
+                // TODO might need to change these when grounder is added.
+                string termString = System.Text.RegularExpressions.Regex.Replace(testOutput, @"\s", "");
+                string termList = termString.Replace('.', ',');
+                termList = "[" + termList.TrimEnd(',') + "]";
+
+                string runProlog = "";
+                // TODO possibly redundant Engine check because of dir being assigned above.
+                if (Admissible.Checked & Proxdd.Checked)
+                    runProlog = dir + @"code\runAb.pl";
+                else if (Grounded.Checked & Proxdd.Checked)
+                    runProlog = dir + @"code\runGb.pl";
+                else if (Admissible.Checked & Grapharg.Checked)
+                    runProlog = dir + @"code\runAb.pl";
+                else if (Grounded.Checked & Grapharg.Checked)
+                    runProlog = dir + @"code\runGb.pl";
+                else if (Ideal.Checked & Proxdd.Checked)
+                    runProlog = dir + @"code\runIb.pl";
+                //TODO might need to wrap up Engine in try catch.
+                //Environment.SetEnvironmentVariable("SWI_HOME_DIR", @"C:\Program Files (x86)\swipl\boot32.prc");  // or boot64.prc
+                //string testVar = Environment.GetEnvironmentVariable("SWI_HOME_DIR");  // or boot64.prc
+                List<String> solution = new List<string>();
+                try
+                {
+                    runProxddEngine(dir, termList, runProlog, solution);
+                }
+                catch { }
+                if (solution.Count > 0)
+                {
+                    Session["Result"] = solution;
+                    Response.Redirect(String.Format("Result.aspx?success=true"));
+                }
+                else
+                {
+                    Response.Redirect(String.Format("Result.aspx?success=false"));
+                }
+                //TODO Batch Stuff hopefully I will substitute.
+
+                //process.StartInfo.FileName = strategy;
+                //process.StartInfo.UseShellExecute = false;
+                //process.StartInfo.Arguments = claim.Text;
+                //process.Start();
+                //process.WaitForExit();                        
             }
-            //TODO Batch Stuff hopefully I will substitute.
 
-            //process.StartInfo.FileName = strategy;
-            //process.StartInfo.UseShellExecute = false;
-            //process.StartInfo.Arguments = claim.Text;
-            //process.Start();
-            //process.WaitForExit();                        
+        }
 
-
+        private void printErrors(List<String> errorList)
+        {
+            ErrorRepeater.DataSource = errorList;
+            ErrorRepeater.DataBind();
         }
 
         private void runProxddEngine(string dir, string termList, string runProlog, List<String> solution)
