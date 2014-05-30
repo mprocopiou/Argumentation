@@ -86,14 +86,17 @@ namespace Argumentation
 
             // TODO adding the ParserGrounder.
             //string testingParser = "asm(aasdd,b){X=1,2;}.t(X) <- [p(X),aasdd(X)]. p(X)<- [r(X)]. s(X) <- [r(X)].p(X)<-[r(X),t(X)].r(X) <-[aasdd(X)].";
-            //string testingParser = framework.Text;
+            string testingParser = framework.Text;
             //Cache Input.
             Session["Input"] = framework.Text;
             Session["Claim"] = claim.Text;
             bool correctInput = true;
             string groundedProgramStr = "";
-            List<String> rndFramework = RandomFrameworkGenerator.RandFrameworkGen.genRandFramewor();
-            string testingParser = String.Join("", rndFramework);
+
+            // CREATING Random framework for testing
+            //List<String> rndFramework = RandomFrameworkGenerator.RandFrameworkGen.genRandFramewor();
+            //string testingParser = String.Join("", rndFramework);
+
             string testOutput = Parser.Parser.startParsing(testingParser, claim.Text, out correctInput, out groundedProgramStr);
             Session["GroundedProg"] = groundedProgramStr;
             if (!correctInput)

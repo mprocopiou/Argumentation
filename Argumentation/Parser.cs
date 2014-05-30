@@ -68,8 +68,9 @@ namespace Parser
                 List<ProgramNode> groundedProgram = Grounder.instantiate(graphC, program, sccOrder, edb);
                 groundedProgramStr = generateGroundedCFG(groundedProgramStr, groundedProgram);
                 // Checking whether claim is  a valid claim once program is grounded.
-                if(!checkValidityOfClaim(edb, groundedProgram, claim)) {
-                    errorMsg = "The claim specified does not exist in the framework.";
+                string error;
+                if(!checkValidityOfClaim(edb, groundedProgram, claim, out error)) {
+                    errorMsg = error;
                     correctInput = false;
                     return errorMsg;
                 }
@@ -351,8 +352,15 @@ namespace Parser
             }
         }
 
-        private static bool checkValidityOfClaim(Dictionary<string, HashSet<ProgramNode>> edb, List<ProgramNode> groundedProgram, string claim)
+        private static bool checkValidityOfClaim(Dictionary<string, HashSet<ProgramNode>> edb, List<ProgramNode> groundedProgram, string claim, out string error)
         {
+            Regex termRegex = new Regex(@"[a-z]?[A-Za-z0-9]+\([a-z0-9][A-Za-z0-9]*(,[a-z0-9][A-Za-z0-9]*)*\)");
+            error = "";
+            if (!termRegex.IsMatch(claim))
+            {
+                error = "The claim specified is not of valid form.";
+                return false;
+            }
             string[] claimParsed = claim.Split(new char[] {'(',')'},StringSplitOptions.RemoveEmptyEntries);
             string id = claimParsed[0];
             string vars = claimParsed[1];
@@ -377,8 +385,10 @@ namespace Parser
             }
             catch
             {
+                error = "The claim specified does not exist in the framework.";
                 return false;
-            }            
+            }
+            error = "The claim specified does not exist in the framework.";
             return false;
         }
 
