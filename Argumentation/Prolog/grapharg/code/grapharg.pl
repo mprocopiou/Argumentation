@@ -47,14 +47,15 @@
 % PRELIMINARIES
 
 :- use_module(library(aggregate),  [free_variables/4]).
-:- use_module(library(samsort),    [samsort/3]).
-:- use_module(library(lists),      [delete/3,remove_dups/2,select/3]).
+%:- use_module(library(samsort),    [samsort/3]).
+:- use_module(library(lists),      [delete/3,list_to_set/2,select/3]).
 :- use_module(library(ordsets),    [list_to_ord_set/2,ord_add_element/3,ord_union/3]).
-:- use_module(library(ugraphs),    [add_edges/3,reduce/2]).        % for acyclicity check
+:- use_module(library(ugraphs),    [add_edges/3,vertices/2,edges/2,vertices_edges_to_ugraph/3]).        % for acyclicity check
 
 :- [printing].
 :- [help].
 :- [extras].
+:- [scc].
 
 :- dynamic
  assumption/1,
@@ -157,6 +158,15 @@ verbose :-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % LOADING
+
+loads(Input) :-
+	preloading,	
+	assert(filestem(test)),
+	repeat, 
+		member(X, Input),
+		(last(Input, X) -> !; process_fail(X)), 
+	(process_fail(X); true),
+	postloading.
 
 loadf(FileStem) :-
  preloading,
@@ -329,7 +339,7 @@ derive([TurnChoice,OppJust,Prop,Opp,PropRule], Result) :-
   ;  format('No fact toBeProved/1; supply a sentence~n', [])
  ).
 
-derive(S, Result) :-
+derive(S, Result, Output) :-
  (
   assumption(S)
   -> D0 = [S]
@@ -345,7 +355,7 @@ derive(S, Result) :-
  retractall(sols(_)),
  assert(sols(1)),
  derivation([[S],[],D0,[],[],[],[],[]], 1, Result),
- print_result(Result),
+ print_result(Result, Output),
  incr_sols.
 
 derive_all(S) :-
@@ -643,7 +653,7 @@ opponent_ii(S, Ss-Js-Conc, Ominus, [P,D,C,JsP,JsO,Att,G], [P,O1,D,C,JsP,JsO1,Att
      findall((Body,RuleID,SsVars), rule(S, RuleID, Body), BodiesIDsVars),
      split_fCbyC(BodiesIDsVars, C, Sf, Snf),
      get_new_just_clusters(Snf, Ss-Js-Conc, S, JCs),
-     remove_dups(JCs, NoDupsJCs),
+     list_to_set(JCs, NoDupsJCs),
      append_elements_nodup(Ominus, NoDupsJCs, O1),
      update_opponent_jcs(Sf, C, S, Ss-Js-Conc, NewJs),
      append_elements_nodup(JsO, NewJs, JsO1),
@@ -1102,3 +1112,80 @@ fCbyC(L, C) :-
  member(E, C),
  !.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% ADDING EXTRA TO RUN WITH SWI-PROLOG.
+
+
+samsort(Order, List, Sorted) :-
+ sam_sort(List, Order, [], 0, Sorted).
+
+sam_sort([], Order, Stack, _, Sorted) :-
+ sam_fuse(Stack, Order, Sorted).
+sam_sort([Head|Tail], Order, Stack, R, Sorted) :-
+ sam_run(Tail, [Head|Queue], [Head|Queue], Order, Run, Rest),
+ S is R + 1,
+ sam_fuse(Stack, Run, Order, S, NewStack),
+ sam_sort(Rest, Order, NewStack, S, Sorted).
+
+sam_fuse([], _, []).
+sam_fuse([Run|Stack], Order, Sorted) :-
+ sam_fuse(Stack, Run, Order, 0, [Sorted]).
+
+sam_fuse([B|Rest], A, Order, K, Ans) :-
+ 0 is K /\ 1,
+ !,
+ J is K >> 1,
+ sam_merge(B, A, Order, C),
+ sam_fuse(Rest, C, Order, J, Ans).
+sam_fuse(Stack, Run, _, _, [Run|Stack]).
+
+sam_run([], Run, [_], _, Run, []).
+sam_run([Head|Tail], QH, QT, Order, Run, Rest) :-
+ sam_rest(QH, QT, Head, Tail, Order, Run, Rest).
+
+sam_rest(Qh, [Last|Qt], Head, Tail, Order, Run, Rest) :-
+ call(Order, Last, Head),
+ !,
+ Qt = [Head|_],
+ sam_run(Tail, Qh, Qt, Order, Run, Rest).
+sam_rest(Run, [_], Head, Tail, Order, Run, [Head|Tail]) :-
+ head_less_equal(Order, Run, Head),
+ !.
+sam_rest(Qh, Qt, Head, Tail, Order, Run, Rest) :-
+ sam_run(Tail, [Head|Qh], Qt, Order, Run, Rest).
+
+head_less_equal(Order, [H|_], X) :-
+ call(Order, H, X).
+
+sam_merge(List1, [], _, List1) :-
+ !.
+sam_merge([], List2, _, List2) :-
+ !.
+sam_merge([Head1|Tail1], [Head2|Tail2], Order, [Head1|Merged]) :-
+ call(Order, Head1, Head2),
+ !,
+ sam_merge(Tail1, [Head2|Tail2], Order, Merged).
+sam_merge(List1, [Head2|Tail2], Order, [Head2|Merged]) :-
+ sam_merge(List1, Tail2, Order, Merged).
+
+reduce(G, RedG) :-
+ vertices(G,Vertices),
+ edges(G,Edges),
+ transform_edges(Edges,Arcs),
+ nodes_arcs_sccs(Vertices,Arcs,NewVerts),
+ get_scc_edges(NewVerts,Edges,NewEdges),
+ vertices_edges_to_ugraph(NewVerts,NewEdges,RedG).
+
+get_scc_edges(_,[],[]) :-
+ !. 
+get_scc_edges(NewVerts,[Src-Trg|RestE],NewEdges) :-
+ findall(Y-X,(member(Y,NewVerts),member(Src,Y),member(X,NewVerts),member(Trg,X),X\=Y),Z),
+ get_scc_edges(NewVerts,RestE,Edges),
+ union(Z,Edges,NewEdges).    
+  
+transform_edges([],[]) :-
+!.
+transform_edges([Src-Trg|Rest],[arc(Src,Trg)|NewEdges]) :-
+ transform_edges(Rest,NewEdges).

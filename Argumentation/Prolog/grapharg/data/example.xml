@@ -1,0 +1,53 @@
+<solution> 
+<node>
+<id>s0_0</id>
+ <name>a</name>
+<type>Asm</type><action>support</action>
+</node>
+<node>
+<id>s0_1</id>
+ <name>c</name>
+<type>Asm</type><action>support</action>
+</node>
+<node>
+<id>s0_2</id>
+ <name>p</name>
+<type>nonAsm</type><action>claim</action>
+</node>
+<node>
+<id>s0_3</id>
+ <name>r</name>
+<type>nonAsm</type><action>argument</action>
+</node>
+<attack>
+<source>s0_0</source>
+<target>s0_2</target>
+</attack>
+<attack>
+<source>s0_1</source>
+<target>s0_3</target>
+</attack>
+<node>
+<id>s1_0</id>
+ <name>b</name>
+<type>Asm</type><action>attack</action>
+</node>
+<node>
+<id>s1_1</id>
+ <name>q</name>
+<type>nonAsm</type><action>argument</action>
+</node>
+<attack>
+<source>s1_0</source>
+<target>s1_1</target>
+</attack>
+<attack>
+<source>s1_1</source>
+<target>s0_0</target>
+</attack>
+<attack>
+<source>s0_3</source>
+<target>s1_0</target>
+</attack>
+
+</solution> 

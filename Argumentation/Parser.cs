@@ -66,14 +66,13 @@ namespace Parser
 
                 // Grounding framework.
                 List<ProgramNode> groundedProgram = Grounder.instantiate(graphC, program, sccOrder, edb);
-
+                groundedProgramStr = generateGroundedCFG(groundedProgramStr, groundedProgram);
                 // Checking whether claim is  a valid claim once program is grounded.
                 if(!checkValidityOfClaim(edb, groundedProgram, claim)) {
                     errorMsg = "The claim specified does not exist in the framework.";
                     correctInput = false;
                     return errorMsg;
                 }
-                groundedProgramStr = generateGroundedCFG(groundedProgramStr, groundedProgram);
                 prologInput = generateProxddInput(prologInput, groundedProgram);
                 return prologInput;
             }
