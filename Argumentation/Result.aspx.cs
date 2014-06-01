@@ -70,13 +70,18 @@ namespace Argumentation
             Session["Claim"] = claim.Text;
             bool correctInput = true;
             string groundedProgramStr;
-            string testOutput = Parser.Parser.startParsing(testingParser, claim.Text, out correctInput, out groundedProgramStr);
-
+            string claimError = "";
+            string testOutput = Parser.Parser.startParsing(testingParser, claim.Text, out correctInput, out claimError, out groundedProgramStr);
+            Session["GroundedProg"] = groundedProgramStr;
             if (!correctInput)
             {
                 List<String> errorList = new List<String>();
                 errorList = testOutput.Split(new char[] { '\n' }, StringSplitOptions.RemoveEmptyEntries).ToList<String>();
                 Session["Error"] = errorList;
+                if (claimError != "")
+                {
+                    Session["ClaimError"] = claimError;
+                }
                 Response.Redirect(String.Format("Result.aspx?"));
             }
             else

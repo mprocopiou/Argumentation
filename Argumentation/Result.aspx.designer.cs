@@ -13,15 +13,6 @@ namespace Argumentation {
     public partial class Result {
         
         /// <summary>
-        /// SolutionNotFound control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label SolutionNotFound;
-        
-        /// <summary>
         /// ErrorRepeater control.
         /// </summary>
         /// <remarks>
@@ -40,33 +31,6 @@ namespace Argumentation {
         protected global::System.Web.UI.WebControls.TextBox framework;
         
         /// <summary>
-        /// groundedProgramBox control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox groundedProgramBox;
-        
-        /// <summary>
-        /// showGroundedBtn control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button showGroundedBtn;
-        
-        /// <summary>
-        /// hideGroundedBtn control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button hideGroundedBtn;
-        
-        /// <summary>
         /// claim control.
         /// </summary>
         /// <remarks>
@@ -74,6 +38,60 @@ namespace Argumentation {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox claim;
+        
+        /// <summary>
+        /// SolutionNotFound control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl SolutionNotFound;
+        
+        /// <summary>
+        /// SolutionNotFoundText control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label SolutionNotFoundText;
+        
+        /// <summary>
+        /// ProxddText control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label ProxddText;
+        
+        /// <summary>
+        /// Proxdd control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RadioButton Proxdd;
+        
+        /// <summary>
+        /// GraphargText control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label GraphargText;
+        
+        /// <summary>
+        /// Grapharg control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RadioButton Grapharg;
         
         /// <summary>
         /// AdmissibleText control.
@@ -130,42 +148,6 @@ namespace Argumentation {
         protected global::System.Web.UI.WebControls.RadioButton Ideal;
         
         /// <summary>
-        /// ProxddText control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label ProxddText;
-        
-        /// <summary>
-        /// Proxdd control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.RadioButton Proxdd;
-        
-        /// <summary>
-        /// GraphargText control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label GraphargText;
-        
-        /// <summary>
-        /// Grapharg control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.RadioButton Grapharg;
-        
-        /// <summary>
         /// Submit control.
         /// </summary>
         /// <remarks>
@@ -173,5 +155,14 @@ namespace Argumentation {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button Submit;
+        
+        /// <summary>
+        /// groundedProgramBox control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox groundedProgramBox;
     }
 }

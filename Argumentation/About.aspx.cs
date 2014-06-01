@@ -39,6 +39,12 @@ namespace Argumentation
                 {
                     printErrors((List<String>)Session["Error"]);
                 }
+                if (Session["ClaimError"] != null)
+                {
+                    SolutionNotFound.Visible = true;
+                    SolutionNotFoundText.Text = (string)Session["ClaimError"];                    
+                }
+                Session["ClaimError"] = null;
                 Session["Error"] = null;
             }
         }
@@ -96,14 +102,18 @@ namespace Argumentation
             // CREATING Random framework for testing
             //List<String> rndFramework = RandomFrameworkGenerator.RandFrameworkGen.genRandFramewor();
             //string testingParser = String.Join("", rndFramework);
-
-            string testOutput = Parser.Parser.startParsing(testingParser, claim.Text, out correctInput, out groundedProgramStr);
+            string claimError = "";
+            string testOutput = Parser.Parser.startParsing(testingParser, claim.Text, out correctInput, out claimError, out groundedProgramStr);
             Session["GroundedProg"] = groundedProgramStr;
             if (!correctInput)
             {
                 List<String> errorList = new List<String>();
                 errorList = testOutput.Split(new char[] {'\n'},StringSplitOptions.RemoveEmptyEntries).ToList<String>();
                 Session["Error"] = errorList;
+                if (claimError != "")
+                {
+                    Session["ClaimError"] = claimError;
+                }
                 Response.Redirect(String.Format("About.aspx?"));
             }
             else
@@ -141,7 +151,8 @@ namespace Argumentation
                 }
                 else
                 {
-                    Response.Redirect(String.Format("Result.aspx?success=false"));
+                    SolutionNotFoundText.Text = "No Solution was found for the target.";
+                    SolutionNotFound.Visible = true;
                 }
                 //TODO Batch Stuff hopefully I will substitute.
 

@@ -15,13 +15,14 @@ namespace Parser
         public static HashSet<String> factdb = new HashSet<string>();
         public static Dictionary<String, HashSet<Tuple<String, String>>> depGraph = new Dictionary<string, HashSet<Tuple<String, String>>>();
 
-        public static string startParsing(string input, string claim, out bool correctInput, out string groundedProgramStr)
+        public static string startParsing(string input, string claim, out bool correctInput, out string claimError, out string groundedProgramStr)
         {
             flushDbs();
 
             List<ProgramNode> program = new List<ProgramNode>();
             Grounder grounder = new Grounder();
             correctInput = true;
+            claimError = "";
             groundedProgramStr = "";
             string prologInput = "";
             string errorMsg = "";
@@ -70,7 +71,7 @@ namespace Parser
                 // Checking whether claim is  a valid claim once program is grounded.
                 string error;
                 if(!checkValidityOfClaim(edb, groundedProgram, claim, out error)) {
-                    errorMsg = error;
+                    claimError = error;
                     correctInput = false;
                     return errorMsg;
                 }
@@ -363,7 +364,7 @@ namespace Parser
             }
             string[] claimParsed = claim.Split(new char[] {'(',')'},StringSplitOptions.RemoveEmptyEntries);
             string id = claimParsed[0];
-            string vars = claimParsed[1];
+            string vars = claimParsed[1];                        
             try
             {
                 if (edb.ContainsKey(id))
