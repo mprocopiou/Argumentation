@@ -1,63 +1,99 @@
-\contentsline {chapter}{\numberline {1}Introduction}{3}
-\contentsline {section}{\numberline {1.1}Incorporating derivation engines in a web application.}{4}
-\contentsline {section}{\numberline {1.2}Visualising the derivation trees.}{5}
-\contentsline {section}{\numberline {1.3}Building a Context Free Grammar for the input of the web application.}{5}
-\contentsline {section}{\numberline {1.4}Grounding a framework over a domain.}{5}
-\contentsline {section}{\numberline {1.5}Implementing derivations using Ideal Semantics.}{6}
-\contentsline {chapter}{\numberline {2}Background}{7}
-\contentsline {section}{\numberline {2.1}Argumentation}{7}
-\contentsline {section}{\numberline {2.2}Assumption-Based Argumentation}{7}
-\contentsline {section}{\numberline {2.3}The ABA framework}{8}
-\contentsline {section}{\numberline {2.4}Proving a claim using ABA}{10}
-\contentsline {section}{\numberline {2.5}Computational mechanisms for ABA}{11}
-\contentsline {section}{\numberline {2.6}Proxdd}{12}
-\contentsline {section}{\numberline {2.7}Grapharg}{13}
-\contentsline {section}{\numberline {2.8}ASPARTIX}{15}
-\contentsline {section}{\numberline {2.9}Implementing Ideal semantics dispute derivations}{16}
-\contentsline {section}{\numberline {2.10}Decision Making with ABA}{18}
-\contentsline {section}{\numberline {2.11}Mapping AA to ABA}{20}
-\contentsline {chapter}{\numberline {3}Building a web application interfacing the derivation engines.}{22}
-\contentsline {section}{\numberline {3.1}Overview of the Solution.}{22}
-\contentsline {subsection}{\numberline {3.1.1}Client}{23}
-\contentsline {subsection}{\numberline {3.1.2}Server}{23}
-\contentsline {subsection}{\numberline {3.1.3}Derivation Engines}{23}
-\contentsline {section}{\numberline {3.2}User Interface with Application.}{24}
-\contentsline {subsection}{\numberline {3.2.1}Setting up the framework.}{24}
-\contentsline {subsection}{\numberline {3.2.2}Configuration of the engines.}{24}
-\contentsline {subsection}{\numberline {3.2.3}Visualisation the derivation tree.}{24}
-\contentsline {section}{\numberline {3.3}Server - Processing the Input.}{25}
-\contentsline {section}{\numberline {3.4}Server - Interfacing with the Prolog Engine.}{25}
-\contentsline {subsection}{\numberline {3.4.1}Need for an interface between C\# and Prolog Engines.}{26}
-\contentsline {subsection}{\numberline {3.4.2}Using the SwiPIC.dll library as an interface.}{26}
-\contentsline {section}{\numberline {3.5}Choosing the current implementation.}{26}
-\contentsline {subsection}{\numberline {3.5.1}Advantages of current implementation.}{27}
-\contentsline {subsection}{\numberline {3.5.2}Disadvantages of current implementation.}{27}
-\contentsline {subsection}{\numberline {3.5.3}Proposed alternative (Prolog Web Server).}{28}
-\contentsline {chapter}{\numberline {4}Creating an Input Language.}{29}
-\contentsline {section}{\numberline {4.1}Creating a Context Free Grammar for the Input.}{29}
-\contentsline {section}{\numberline {4.2}The need for a new input.}{29}
-\contentsline {subsection}{\numberline {4.2.1}Formal definition of Input.}{30}
-\contentsline {section}{\numberline {4.3}Parsing in the input.}{30}
-\contentsline {subsection}{\numberline {4.3.1}Building a simple parser for the language.}{30}
-\contentsline {subsection}{\numberline {4.3.2}Verifying the correctness of the input.}{32}
-\contentsline {subsection}{\numberline {4.3.3}Forcing the existence of a contrary.}{32}
-\contentsline {section}{\numberline {4.4}Example of an input.}{32}
-\contentsline {chapter}{\numberline {5}Grounding a framework over its domain.}{33}
-\contentsline {section}{\numberline {5.1}The need of specifying a domain for a framework.}{33}
-\contentsline {section}{\numberline {5.2}Implementing a grounder.}{34}
-\contentsline {subsection}{\numberline {5.2.1}Description of the algorithm.}{34}
-\contentsline {subsection}{\numberline {5.2.2}Advantages of implementation.}{36}
-\contentsline {subsection}{\numberline {5.2.3}Disadvantages of implementation.}{37}
-\contentsline {section}{\numberline {5.3}Example of expected output.}{37}
-\contentsline {chapter}{\numberline {6}Implementing Ideal Semantics dispute derivations.}{38}
-\contentsline {section}{\numberline {6.1}Extending Proxdd to include ideal semantics.}{38}
-\contentsline {section}{\numberline {6.2}Implementing ideal semantics.}{39}
-\contentsline {subsubsection}{Updating the F set.}{39}
-\contentsline {subsubsection}{Carrying out the \emph {Fail(S)} check.}{40}
-\contentsline {subsubsection}{Adding the Ideal Semantics to Proxdd.}{41}
-\contentsline {section}{\numberline {6.3}Example of ideal derivation.}{42}
-\contentsline {chapter}{\numberline {7}Project Plan}{43}
-\contentsline {section}{\numberline {7.1}Planning Implementation}{43}
-\contentsline {section}{\numberline {7.2}Project Timeline}{44}
-\contentsline {section}{\numberline {7.3}Planning Future Extensions}{45}
-\contentsline {chapter}{\numberline {8}Evaluating Project}{47}
+\contentsline {chapter}{\numberline {1}Introduction}{1}
+\contentsline {section}{\numberline {1.1}Incorporating derivation engines in a web application.}{2}
+\contentsline {section}{\numberline {1.2}Visualising the derivation trees.}{3}
+\contentsline {section}{\numberline {1.3}Building a Context Free Grammar for the input of the web application.}{3}
+\contentsline {section}{\numberline {1.4}Grounding a framework over a domain.}{3}
+\contentsline {section}{\numberline {1.5}Implementing derivations using Ideal Semantics.}{4}
+\contentsline {chapter}{\numberline {2}Background}{5}
+\contentsline {section}{\numberline {2.1}Argumentation}{5}
+\contentsline {section}{\numberline {2.2}Assumption-Based Argumentation}{5}
+\contentsline {section}{\numberline {2.3}The ABA framework}{6}
+\contentsline {section}{\numberline {2.4}Proving a claim using ABA}{8}
+\contentsline {section}{\numberline {2.5}Computational mechanisms for ABA}{9}
+\contentsline {section}{\numberline {2.6}Proxdd}{10}
+\contentsline {section}{\numberline {2.7}Grapharg}{11}
+\contentsline {section}{\numberline {2.8}ASPARTIX}{13}
+\contentsline {section}{\numberline {2.9}Implementing Ideal semantics dispute derivations}{14}
+\contentsline {section}{\numberline {2.10}Decision Making with ABA}{16}
+\contentsline {section}{\numberline {2.11}Mapping AA to ABA}{18}
+\contentsline {chapter}{\numberline {3}System Overview.}{20}
+\contentsline {section}{\numberline {3.1}Providing a web application based interface for derivation engines.}{20}
+\contentsline {subsection}{\numberline {3.1.1}Making ABA more accessible.}{20}
+\contentsline {subsection}{\numberline {3.1.2}Common gateway to various engines.}{20}
+\contentsline {section}{\numberline {3.2}Flow of the System.}{21}
+\contentsline {subsection}{\numberline {3.2.1}Flow overview and Diagram.}{21}
+\contentsline {subsection}{\numberline {3.2.2}Overview of functionalities.}{22}
+\contentsline {subsubsection}{User Input.}{22}
+\contentsline {subsubsection}{Parser.}{22}
+\contentsline {subsubsection}{Grounder.}{23}
+\contentsline {subsubsection}{Input Generation.}{23}
+\contentsline {subsubsection}{Derivation.}{23}
+\contentsline {subsubsection}{Output Generation.}{24}
+\contentsline {subsubsection}{Visualisation.}{24}
+\contentsline {section}{\numberline {3.3}System Design choices.}{25}
+\contentsline {subsection}{\numberline {3.3.1}Plug---In and Plug---Out.}{25}
+\contentsline {subsection}{\numberline {3.3.2}Need for Generator functions.}{25}
+\contentsline {chapter}{\numberline {4}Creating an Input Language.}{26}
+\contentsline {section}{\numberline {4.1}Creating a Context Free Grammar for the Input.}{26}
+\contentsline {section}{\numberline {4.2}The need for a new input.}{26}
+\contentsline {subsection}{\numberline {4.2.1}Formal definition of Input.}{27}
+\contentsline {section}{\numberline {4.3}Parsing in the input.}{27}
+\contentsline {subsection}{\numberline {4.3.1}Building a simple parser for the language.}{27}
+\contentsline {subsection}{\numberline {4.3.2}Verifying the correctness of the input.}{29}
+\contentsline {subsection}{\numberline {4.3.3}Forcing the existence of a contrary.}{29}
+\contentsline {section}{\numberline {4.4}Example of an input.}{29}
+\contentsline {chapter}{\numberline {5}Grounding a framework over its domain.}{30}
+\contentsline {section}{\numberline {5.1}The need of specifying a domain for a framework.}{30}
+\contentsline {section}{\numberline {5.2}Implementing a grounder.}{31}
+\contentsline {subsection}{\numberline {5.2.1}Description of the algorithm.}{31}
+\contentsline {subsection}{\numberline {5.2.2}Advantages of implementation.}{33}
+\contentsline {subsection}{\numberline {5.2.3}Disadvantages of implementation.}{34}
+\contentsline {section}{\numberline {5.3}Example of expected output.}{34}
+\contentsline {chapter}{\numberline {6}Implementing Ideal Semantics dispute derivations.}{35}
+\contentsline {section}{\numberline {6.1}Extending Proxdd to include ideal semantics.}{35}
+\contentsline {section}{\numberline {6.2}Implementing ideal semantics.}{36}
+\contentsline {subsubsection}{Updating the F set.}{36}
+\contentsline {subsubsection}{Carrying out the \emph {Fail(S)} check.}{37}
+\contentsline {subsubsection}{Adding the Ideal Semantics to Proxdd.}{38}
+\contentsline {section}{\numberline {6.3}Example of ideal derivation.}{39}
+\contentsline {chapter}{\numberline {7}Building a web application interfacing the derivation engines.}{40}
+\contentsline {section}{\numberline {7.1}Overview of the Solution.}{40}
+\contentsline {subsection}{\numberline {7.1.1}Client}{40}
+\contentsline {subsection}{\numberline {7.1.2}Server}{41}
+\contentsline {subsection}{\numberline {7.1.3}Derivation Engines}{41}
+\contentsline {section}{\numberline {7.2}User Interface with Application.}{41}
+\contentsline {subsection}{\numberline {7.2.1}Setting up the framework.}{42}
+\contentsline {subsection}{\numberline {7.2.2}Configuration of the engines.}{42}
+\contentsline {subsection}{\numberline {7.2.3}Visualisation the derivation tree.}{42}
+\contentsline {section}{\numberline {7.3}Server - Processing the Input.}{43}
+\contentsline {section}{\numberline {7.4}Server - Interfacing with the Prolog Engine.}{43}
+\contentsline {subsection}{\numberline {7.4.1}Need for an interface between C\# and Prolog Engines.}{43}
+\contentsline {subsection}{\numberline {7.4.2}Using the SwiPIC.dll library as an interface.}{44}
+\contentsline {section}{\numberline {7.5}Choosing the current implementation.}{44}
+\contentsline {subsection}{\numberline {7.5.1}Advantages of current implementation.}{44}
+\contentsline {subsection}{\numberline {7.5.2}Disadvantages of current implementation.}{45}
+\contentsline {subsection}{\numberline {7.5.3}Proposed alternative (Prolog Web Server).}{46}
+\contentsline {chapter}{\numberline {8}Evaluation of the System.}{47}
+\contentsline {section}{\numberline {8.1}Evaluating GUI Usability.}{47}
+\contentsline {subsection}{\numberline {8.1.1}User testing and feedback.}{47}
+\contentsline {subsection}{\numberline {8.1.2}Initial Concept.}{48}
+\contentsline {subsection}{\numberline {8.1.3}Changes to GUI.}{49}
+\contentsline {subsubsection}{Include ability to see grounded framework.}{49}
+\contentsline {subsubsection}{Tabulated sections.}{49}
+\contentsline {subsubsection}{Bootstrap based GUI.}{50}
+\contentsline {section}{\numberline {8.2}Evaluating the Grounder.}{50}
+\contentsline {subsection}{\numberline {8.2.1}Checking validity through examples.}{50}
+\contentsline {subsection}{\numberline {8.2.2}Random Framework generator.}{50}
+\contentsline {subsubsection}{How the random generator works.}{50}
+\contentsline {subsubsection}{Grounding large scale frameworks.}{50}
+\contentsline {subsection}{\numberline {8.2.3}Performance of Grounder.}{50}
+\contentsline {section}{\numberline {8.3}Evaluating the ideal semantics implementation.}{50}
+\contentsline {subsection}{\numberline {8.3.1}Testing in Swi---Prolog.}{51}
+\contentsline {subsubsection}{Testing updating of F set.}{51}
+\contentsline {subsubsection}{Testing Fail(S) derivations.}{52}
+\contentsline {subsubsection}{Testing the ideal based derivations as a whole.}{53}
+\contentsline {chapter}{\numberline {9}Conclusions}{54}
+\contentsline {section}{\numberline {9.1}What comes next?}{54}
+\contentsline {subsection}{\numberline {9.1.1}Building on top of the Web---Application.}{54}
+\contentsline {subsection}{\numberline {9.1.2}Real World Application.}{54}
+\contentsline {section}{\numberline {9.2}Concluding remarks.}{54}

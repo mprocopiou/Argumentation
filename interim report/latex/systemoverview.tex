@@ -1,0 +1,76 @@
+\newpage	
+
+\chapter{System Overview.}
+
+\section{Providing a web application based interface for derivation engines.}
+The project's main outcome is creating an extendible web application that provides an interface to various derivation engines for ABA. The application should be user friendly and allow for future integration with other engines. This extensibility can enable the application to establish itself as a common gateway to various derivation engines for ABA. As more engines are added the Web Application can be established as a one-stop-shop for all things ABA.
+
+\subsection{Making ABA more accessible.}
+By providing access to the derivation engines through a web application we can increase the availability of ABA derivation engines to the public. Anyone with access to the internet will be able to communicate with these engines and obtain derivation for frameworks they require. This accessibility will allow the increase in popularity of ABA frameworks and can provide the basis for further development to take place with ABA at its centre.
+
+\subsection{Common gateway to various engines.}
+Rather than just providing an online GUI interface for the derivation engines, the system is structured so as to provide an extendible middle---ware solution. This implementation allows the system to be extended both in the front---end and the back---end. Further applications can be built on top of the existing application allowing for either different styles of argumentation to be evaluated (as described in [TODO]) or applications that implement ABA in real---life scenarios.
+
+Thus, it is important that the system is abstracted in such a way that allows such extendibility. It is also important that key elements of the systems flow can easily be adapted to any further implementation. This can be achieved by modularising the functionalities. The modules themselves are explored further in the following section [TODO]. However, in this section we discuss the flow of the system and how we accomplished the desired functionality. The specifics of the system in terms of implementation and design are discussed more elaborately in section [TODO].
+
+\section{Flow of the System.}
+Just like any other system this web application can be considered as a series of interlocking components that are combined to perform specific tasks. This implies there is a flow of information between these components when carrying out a task. In the case of our system this flow is mostly linear and can be considered as a pipeline to which we feed information and get a desired output.
+
+When considering the system at the highest level of abstraction it can be defined as in figure [TODO]. The system receives an input by the user through its GUI and then handles all preprocessing steps in order to make the input compatible with the derivation engine. Once the derivation is complete the output is a again processed into a desirable output form which is provided by the GUI to the user. An overview of the individual steps and their purpose is provided in section [TODO].
+
+\subsection{Flow overview and Diagram.}
+The main components of the system are analysed in detail in terms of their implementation, design and evaluation in the respective sections. However to provide a more detailed overview of how the web application handles information flow we use Figure [TODO]. There we can see how the system handles the input and the configuration parameters. We can also see how it would be able to handle additional layers being built on top of it.
+
+[TODO] - INSERT DIAGRAM OF FLOW.
+
+\subsection{Overview of functionalities.}
+Having considered the flow of data withing the application, we can now look at the individual components of the system and their purpose and functionality. For details of the implementation references to the relevant sections that follow are provided.
+
+\subsubsection{User Input.}
+The user is expected to be able to provide three key pieces of information.
+
+\begin{itemize}
+\item \emph{Framework} - Users should be able to define an ABA framework using a suitable input mechanism.
+\item \emph{Configuration} - Users should be able to configure the application by choosing which derivation engine and which semantics to use.
+\item \emph{Target} - Users should be able to define the target for which they are seeking a derivation.
+\end{itemize}
+
+Therefore, a suitable method is required so the user can accomplish the above. As specified before the web application aims at providing a portal for users to numerous derivation engines. These engines can be implemented using different technologies, programming languages and might expect different input formats. By abstracting the input mechanism from the derivation engine, we can now allows user to use the same input mechanism to specify the input without having to concern themselves with the specifics of the derivation engine's implementation. To achieve this a simple input language has been defined and implemented, allowing the users to define their frameworks in the same way, irrespective of the underlying derivation engine chosen. The formal definition of this language and further elaboration on the implementation is discussed in section [TODO].
+
+\subsubsection{Parser.}
+Having established that the input mechanism will be command based a parser is required in order to recognise a command, check if it is valid and carry out the necessary instruction. The purpose of the parser is to check the validity of the input provided and provide the user with the required feedback if the input is invalid. If the input is valid then the parser forwards the input to the grounder so the respective grounder framework is derived. The implementation of the parser is discussed in section [TODO].
+
+\subsubsection{Grounder.}
+ABA frameworks can be defined based on an underlying domain. If this is the case then rules and assumptions might exist over certain parts of the domain, but not over others. The input mechanism accommodates this by allowing the users to define a domain over which an assumption exists. The means by which this is done are explained in section [TODO].
+
+However, in our case both Proxdd and Grapharg do not accommodate ungroudned frameworks. Therefore, a mechanism must be provided that allows the generation of the respective grounded framework before it is passed to the derivation engine. Once again by abstracting the grounding process we can ensure that it is irrelevant whether the underlying derivation engine supports ungrounded frameworks as we can guarantee that any framework provided would first have been grounded over the specified domain.
+
+By implementing a grounder we provide greater flexibility to the users and allow this to be done without having to change the implementation of the derivation engines. The details concerning the design and implementation of the grounder as established in section [TODO].
+
+\subsubsection{Input Generation.}
+This is the last step of the preprocessing carried out on the user input before it is provided to the derivation engine. By this stage we have not acquired a valid and grounded framework and have parsed the configuration parameters provided by the user. This implies that we are now aware of both the engine we require for the derivation and the semantics. Therefore, we are now able to translate the grounded framework we have in the required format expected by the targeted derivation engine.
+
+This is the first bridge between our system and the underlying derivation engines. Generators have to be implemented based on the requirements of the expected input for each derivation engine. Based on the configuration settings provided by the user the correct generator is used to provide the input for the derivation engine in the expected format. Such generators should be easy to implement since the process they carry out is simply generating a string in the correct format. Implementation is discussed further in section [TODO].
+
+\subsubsection{Derivation.}
+The derivation process is carried out by the derivation engines and their implementation. This aspect of the web application can be considered as a black box. Ideally, the inner working of each derivation engine should not affect us much. Our web application is concerned with setting up the derivation engine as required by specifying the semantics to be used, providing the framework as an input and specifying a target. Once this is done the application then runs the derivation engine and awaits for the result.
+
+Therefore once again we abstract the inner workings of the derivation engines from the rest of the applications. This allows us easily switch between the derivation engines depending on what the user has specified. Chosen implementation by which the web application interacts with the derivation engines is discussed in section [TODO].
+
+It should be noted, however, that the Proxdd derivation engine has also been extended in order to provide the user with the ability to find derivations based on Ideal Semantics. The implementation of these semantics are discussed in section [TODO].
+
+\subsubsection{Output Generation.}
+Similarly to the Input Generation this step acts as a bridge between the derivation engine used and the web application. Depending on the derivation engine used the output provided might be in a different format. An output generator must be implemented that will allow the interpretation of this output and its conversion to the format required by the web application. Implementing such generators would again be straight forward. In interpreting the result in a single output format for the web application we abstract any further processing carried out from the specifications of the derivation engine. Once the result has been converted to the desired format the application can then process it as it requires, without having to concern itself about which derivation engine was used. Further discussion of the implementation of such generators is provided in section [TODO].
+
+\subsubsection{Visualisation.}
+Lastly, having analysed the framework and derived a solution for our target the web application then has to meaningfully transfer the result to the user. At this step the web application has interpreted the result and it is now able to provide the result to the user through it GUI. Visualisation of the result can be extended to include any format that the users might find useful. In our case the visualisation chosen is that of a derivation tree. The implementation of the visualisation of the result is discussed in section  [TODO].
+
+\section{System Design choices.}
+There are certain peculiarities of the requirements of this system that require certain design choices to be made. These can be seen as part of the flow of data in the system and have to do with our desire to establish a flexible and extendible solution. The web application put substantial effort in abstracting the format of the user input and the output from what is expected by the derivation engine. Had we been building a simple web application laying on top of a single engine we could have built the application specifically in accordance to the implementation of the derivation engine, thus avoiding many of the preprocessing and post---processing steps, especially those involved with interpreting and converting the inputs and outputs to a format recognisable by the engine. However, this would make the system rigid and hard to accommodate any other engines or applications on top of it.
+
+\subsection{Plug---In and Plug---Out.}
+In order to be able to allow for the functionality not to be reliant on the underlying derivation engine the web application has to accommodate a Plug---In and Plug---Out mentality for some of the desired components. This implies that depending on the configuration chosen by the user the application must adapt and plug into the required components effortlessly. Additionally, this implies that new components should be added to this application with similar ease. Once the necessary adjustments are done the system will be able to plug the new components in and out.
+
+\subsection{Need for Generator functions.}
+Integral to this idea of plug---in and plug---out approach is the ability to isolate the derivation engines and consider them as black boxes. In order to do so we require two generator functions for each engine that act as wrappers to the engines. They allow the conversion of our input and output to and from the formats the derivation engine expects. Depending on which derivation engine has been chosen during configuration the correct generator functions are chosen. These functions, one could argue, could hinder the performance of the application as it involves what could potentially be unnecessary format conversion. However, this is an inevitably trade---off in order to achieve the flexibility we require to provide a true middle---ware solution that can be extended on both sides easily.
+

@@ -17,20 +17,33 @@
 \newtheorem{defn}{Definition}
 \theoremstyle{definition}
 \newtheorem{exmp}{Example}
+
 \begin{document}
 
 \input{./title.tex}
 
 \tableofcontents
 
+\begin{abstract}
+\input{./abstract.tex}
+\end{abstract}
+
+\renewcommand{\abstractname}{Acknowledgements}
+\begin{abstract}
+\input{acknowledgements.tex}
+\end{abstract}
+
 \input{./introduction.tex}
 \input{./background.tex}
-\input{./softengpart.tex}
+\input{./systemoverview.tex}
 \input{./inputlanguage.tex}
 \input{./grounder.tex}
 \input{./idealsemantics.tex}
-\input{./projectplan.tex}
-\input{./evaluation.tex}
+\input{./softengpart.tex}
+%\input{./projectplan.tex}
+\input{./evaluationFinal.tex}
+%\input{./evaluation.tex}
+\input{./conclusion.tex}
 
 \newpage
 \nocite{*}
