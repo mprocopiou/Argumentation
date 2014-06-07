@@ -1,0 +1,17 @@
+
+asm(a(X),q(X)){X=1;}.
+asm(b(X),f(X)){X=1;}.
+asm(c(X),u(X)){X=1;}.
+asm(d(X),v(X)){X=1;}.
+asm(e(X),v(X)){X=1;}.
+asm(f(X),v(X)){X=1;}.
+
+p(X)<-[a(X),u(X)].
+q(X)<-[b(X),r(X)].
+q(X)<-[c(X),s(X)].
+q(X)<-[c(X),t(X)].
+u(X)<-[a(X)].
+s(X)<-[]{X=1;}.
+t(X)<-[d(X)].
+t(X)<-[e(X)].
+

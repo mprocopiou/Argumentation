@@ -34,6 +34,30 @@ Updating the ``F'' set in accordance with the algorithm in most cases is straigh
 The most complicated updating of the ``F'' set takes place at step [TODO].	An update at this step is illustrated by the example [TODO].
 
 [TODO] - Add example that updates the F set accordingly.
+\begin{framed}
+\begin{exmp} Consider the following assumption based framework:
+\\*
+
+\noindent\textbf{R} - includes the following rules:
+\\*
+
+\indent	z\textleftarrow a
+
+\indent z\textleftarrow b
+
+\indent y\textleftarrow a
+
+\indent x\textleftarrow d
+
+\indent v\textleftarrow c
+\\*
+
+\noindent\textbf{A} = \{a,b,c,d\} and $\bar{a} = z, \bar{b} = y, \bar{c} = x, \bar{d} = v$.
+
+\end{exmp}
+\end{framed}
+
+\input{./fsetframework}
 
 Having appended the ``F'' set we can then test that it is updated correctly, in accordance to the algorithm, without having to implement any of the next steps. This can be done using the ab-dispute derivation semantics and checking the value of the ``F'' set at each step. The ``F'' set would simply be ignored and the derivation should still return a valid derivation.
 
@@ -49,6 +73,23 @@ Similarly the \emph{Fail(S)} check plays a Proponent/Opponent games similarly to
 
 Having implemented the various cases and steps the ideal semantics algorithm was tested by running each step with dummy input and checking whether the output would reflect the expected output, as illustrated by example [TODO]. This ensured the validity of the tuples generated. Having established the validity of these steps we then incorporated them together in a recursive dispute derivation game (see algorithm in [TODO]). This enabled us to check \emph{Fail(S)} as a whole by again inputting a dummy case and checking whether the derivation process was carried out and completed. In this case, due to the semantics being implemented in Prolog, the \emph{Fail(S)} check was expected to either fail or return true if it succeeded, depending on the input we provided. Nonetheless, to ensure the validity of the derivation the process was checked at each step to ensure that the tuples were being generated as expected.
 
+\begin{exmp} The example below is based on the frame work in example [TODO]. It displays the fail-dispute derivation of \{a\} step-by-step.
+\\*
+
+$\mathbf{D}_0$ = \{(\{a\},\{\},\{a\},\{\})\}
+
+$\mathbf{D}_1$ = \{(\{\},\{\{z\}\},\{a\},\{\})\}
+
+$\mathbf{D}_2$ = \{(\{\},\{\{a\},\{b\}\},\{a\},\{\})\}
+
+$\mathbf{D}_3$ = \{(\{\},\{\{\},\{b\}\},\{a\},\{\})\}
+
+$\mathbf{D}_4$ = \{\}
+
+\end{exmp}
+
+In the above the example we can see that the fail-dispute derivation terminates successfully as $\mathbf{D}_4$ = \{\}. Therefore, for \{a\} a fail-dispute derivation is possible. Provided that the check succeeds in all the other elements of the ``F''- set, then the derivation is valid under ideal-semantics.
+
 The current implementation has potential to be optimised further to allow for faster Fail-dispute derivation checks. This would be especially useful in larger scale frameworks. Although the functionality is accurate there is still room for improvement in some areas. One such area can be the selection process by which the algorithm chooses which sentence or set of sentences to check at each turn. For the ab-derivation in Proxdd there is a a selection process that implements an ordering on these sentences before it chooses. Such an optimisation has not been implemented in the current implementation. Currently the Fail-dispute derivation chooses sentences simply by picking off the head of the list each time.
 
 
@@ -60,13 +101,60 @@ The major change of the ib-dispute derivation is the inclusion of a ``new player
 
 Therefore, the first design choice we need to make is when do we attempt to check whether the sets in ``F'' satisfy the Fail-dispute derivation check. Our solution to this problem is to let the ab-derivation run to completion (i.e both P and O are empty) and then, instead of terminating, identifying that it is F's turn to run the fail-dispute derivation check. Therefore, when incorporating the ideal semantics into Proxdd the ``choose\textunderscore turn'' function was adapted as shown in definition [TODO].
 
-[TODO] - Add code of choose\textunderscore turn.
+\begin{Verbatim}[frame=single]
+
+choose_turn([], [], _, fail) :-
+ !.
+choose_turn([], _, _, opponent) :-
+ !.
+choose_turn(_, [], _, proponent) :-
+ !.
+choose_turn(P, O, _, Player) :-
+ option(strategy(turn_choice), Strategy),
+ turn_choice(Strategy, P, O, Player).
+ 
+\end{Verbatim}
+
+The above code segment shows how we re-implemented the ``choose\textunderscore turn'' function to accommodate running ideal-based semantics. We implemented an extra case that allows for the selection of F's turn.
 
 By implementing F's turn we now have an implementation of the algorithm that finds an admissible derivation and then checks whether this solution is also in accordance to the ideal semantics, as specified in algorithm [TODO].
 
 Additionally to the ``choose\textunderscore turn'' function the ``derivation'' function had to be adapted as well. Specifically, the base case had to be adapted as shown in [TODO].
 
-[TODO] add new derivation function code.
+\begin{Verbatim}[frame=single]
+
+derivation([[],[],D,C,At,Ar,[]], _, _,[D,C,At,Ar,[]]) :-
+ !.
+derivation(T, N, L, Result) :-
+ derivation_step(T, L, T1, L1),
+ poss_show_step(N, T1),
+ N1 is N + 1,
+ derivation(T1, N1, L1, Result).
+ 
+\end{Verbatim}
+
+The extension of the base case now ensures that the F set is also empty before the derivation terminates. This ensures that our derivation under Ideal semantics has been completed successfully.
+
+Following this we also had to change the ``derivation\textunderscore step'' function to run the necessary function when it is F's turn. The updated function can be seen below:
+
+\begin{Verbatim}[frame=single]
+
+derivation_step([P,O,D,C,At,Ar,F], L, T1, L1) :-
+ choose_turn(P, O, F, Turn),
+ (
+  Turn = proponent
+  -> proponent_step([P,O,D,C,At,Ar,F], L, T1, L1)
+  ; 
+	(
+	 Turn = opponent
+	 -> opponent_step([P,O,D,C,At,Ar,F], L, T1, L1)
+	 ; fail_step([P,O,D,C,At,Ar,F], L, T1, L1)
+	 )
+ ).
+
+\end{Verbatim}
+
+The derivation function has been adapted as shown in the code segment above in order to incorporate the \emph{Fail(S)} check. Having adapted the function to choose when it is F's turn, we now adapted the ``derivation'' function to catch the case when it is F's turn and direct it to the correct step that has to be carried out.
 
 The current implementation of Proxdd terminates the derivation successfully if both P and O are empty. However as noted already in ideal semantics this is not enough. The derivation base case has been adapted so as to terminate successfully when the ``F'' set is empty as well. This implies that each set of sentences in the ``F'' set has successfully  passed the \emph{Fail(S)} check and has been removed from ``F'' in accordance to the algorithm defined in [TODO]. 
 

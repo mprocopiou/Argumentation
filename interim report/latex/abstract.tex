@@ -1,1 +1,11 @@
-TODO WRITE ABSTRACT
+Assumption Based Argumentation (ABA) frameworks can be used to represent a knowledge based systems or decision making problems. Through various dispute derivation processes one can then deduce the validity of a conclusion they have suggested, in accordance to the framework defined.
+
+In this project we propose the implementation of a web application allowing the users to define ABA frameworks on-line and then carry out the necessary derivation of the conclusions they specify. We suggest the a flexible implementation allowing the application to be considered as a middle-ware solution on top of which further application can be developed. Additionally, the system abstracts its functionality from the derivation engines allowing for the support of an array of different argumentation derivation engines.
+
+We begin by defining a unified input mechanism, in the form of a formally defined language, that allows for the definition of ABA frameworks irrespective of the underlying derivation engine. A parser was built for the input language that interprets and validates the input.
+
+Additionally, we enable the definition of a domain over which a framework exists. This enables us to ground frameworks over the domain using a grounder we have developed. This extends the use of ABA frameworks by accounting for domains and variables.
+
+Furthermore, we extend an existing derivation engine to accommodate dispute derivations based on ideal semantics, thus further extending the diversity of choices available to the user.
+
+Lastly, the web application in its entirety is thoroughly evaluated through a serious of test runs with predefined examples.

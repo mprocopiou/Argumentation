@@ -18,12 +18,14 @@ It was built using tools such ASP.Net and Javascript. ASP.Net, along with HTML w
 
 The Server part acts as a coordinator between the Client and the Derivation Engines. Within the Server the input from the Client is processed and prepared to be given to the necessary derivation engine to be analysed. The Server part carries out the following functionality:
 
-\begin{itemize*}
+\begin{itemize}
+
 \item Analyses the parameters from the user and selects the correct derivation engine and semantics.
 \item Parses the user's input, processes it and generates the relative input for the derivation engine.
 \item Grounds the framework provided by the user over the domain specified.
 \item Parses and analyses the output from the derivation engine and builds a JSON string that is passed to the client to build the derivation tree visualisation.
-\end{itemize*}
+
+\end{itemize}
 
 \subsection{Derivation Engines}
 
@@ -35,9 +37,14 @@ The application, like most web applications, carries out most of the intensive p
 
 \subsection{Setting up the framework.}
 
-Since the application derives the solution of a user defined argumentation framework, then the user should have the means to input said framework. The GUI provides a text box in which the user can define their ABA framework using a simple language that allows them to define assumptions, contraries and rules over a specified domain. An simple example of such an input can be seen at [TODO]:
+Since the application derives the solution of a user defined argumentation framework, then the user should have the means to input said framework. The GUI provides a text box in which the user can define their ABA framework using a simple language that allows them to define assumptions, contraries and rules over a specified domain. A simple example of such an input can be seen at [TODO]:
 
-[TODO]
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{argumentationText.png}
+    \caption{Defining framework and targeted conclusion.}
+    \label{fig:arg_text}
+\end{figure}
 
 The formal context free grammar of the input language along with how it is parsed is explained in detail in section [TODO].
 
@@ -47,23 +54,70 @@ Additionally the users should be able to choose the configuration of the derivat
 
 The users can choose the engine required by checking the check-box as in example [TODO].
 
-[TODO]
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{argumentationEngines.png}
+    \caption{Choosing derivation engine.}
+    \label{fig:arg_engines}
+\end{figure}
 
 The user can then choose the semantics required by selecting the check-box corresponding to the required semantics, as in example [TODO].
 
-[TODO]
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{argumentationSemantics.png}
+    \caption{Choosing semantics for derivation.}
+    \label{fig:arg_semantics}
+\end{figure}
 
 [COULD INCLUDE JUST ONE IMAGE WITH ANNOTATION]
 
 Lastly, the user must specify the claim for which a derivation is required as in example [TODO].
 
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{argumentationConclusion.png}
+    \caption{Declaring a targeted conclusion.}
+    \label{fig:arg_conclusion}
+\end{figure}
+
+An example of the input form completed in its entirety can be seen at example [TODO]
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{argumentationInputFull.png}
+    \caption{Example of completed input configuration form.}
+    \label{fig:arg_input_full}
+\end{figure}
+
 \subsection{Visualisation the derivation tree.}
 
 Once the input provided has been analysed by the derivation engines then the solution found is provided to the user as a derivation tree. Once the Server side finishes processing the solution it provides a JSON string that is interpreted client-side by javascript and the D3.js visualisation library. The JSON string has a structure as illustrated in example [TODO]. This structure specifies the characteristics of each node in the tree and the edges between the nodes.
 
-[TODO]
+\begin{Verbatim}[frame=single]
+{ 
+	"nodes":
+	[
+	{"id":"s0_0","name":"p(1)","shape":3,"group":0},
+	{"id":"s0_1","name":"a(1)","shape":0,"group":1},
+	]
+	,"links":
+	[
+	{"source":1,"target":0,"value":1,"group":0},
+	{"source":3,"target":2,"value":1,"group":0},
+	{"source":2,"target":1,"value":1,"group":1},
+	]
+}
+\end{Verbatim}
 
 On the client side the JSON is processed and the derivation tree it represents is illustrated in the canvas area of the web page as shown in example [TODO]. The tree is annotated and colour coded for clarity and it also allows the user to zoom in and out.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{argumentationTree.png}
+    \caption{Visualisation of output as derivation tree.}
+    \label{fig:arg_tree}
+\end{figure}
 
 \section{Server - Processing the Input.}
 
@@ -98,7 +152,26 @@ Nonetheless, for reasons explained in more detail in section [TODO] the use of a
 
 The SwiPIC.dll library was chosen as it a provide a simple interface from C\# to the SWI-Prolog. It allows for the initialisation of an Instance of the SWI-Prolog Engine and we can then build Prolog queries that can be run. The code snippet at [TODO] provide an example of how the Prolog Engine is initialised and how a query is run:
 
-[TODO ADD EXAMPLE OF CODE]
+\begin{Verbatim}[frame=single]
+
+if (!PlEngine.IsInitialized)
+{
+    String[] param = { "-q", "-f", runProlog };  
+    PlEngine.Initialize(param);
+
+    using (PlQuery q = new PlQuery("loads(" + termList + "),
+    		sxdd(" + claim.Text + ",X,Y)"))
+    {
+    	int idx = 0;
+        foreach (PlQueryVariables v in q.SolutionVariables)
+        {
+        	solution.Add(v["Y"].ToString());
+        }
+    }
+    PlEngine.PlCleanup();
+}
+
+\end{Verbatim}
 
 By using an external library such as this we can easily interact with the derivation engines implemented in Prolog by submitting the query we have constructed based on the user's input and extracting the solution returned by the engine. The interface also enables us to implement the bulk of the application in C\# and then use external libraries such as this to interact with any other derivation engines in the future, while keeping the bulk of the implementation common.
 

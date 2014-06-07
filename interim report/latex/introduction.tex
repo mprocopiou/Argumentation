@@ -13,15 +13,47 @@ The project's objectives centre around providing solutions to the problems menti
 
 We looked into designing a web application that would provide an online interface to the derivation engines. This includes a clean and simple interface by which the user is able to choose both the engine and the semantics required and would also allow them to define their ABA framework. Figure [TODO] provides a screen shot of the GUI used by the user to interact with the derivation engines. The implementation and design choices are detailed in sections [TODO].
 
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{argumentationInput.png}
+    \caption{Input configuration panel.}
+    \label{fig:arg_config}
+\end{figure}
+
 \section{Visualising the derivation trees.}
 
 We then looked into a suitable output method of the solution received from the derivation engines. This involves the visualisation of the derivation tree on a canvas environment as illustrated in figure [TODO]. The visualisation provides a clear and concise method for the user to evaluate the derivation of the claim they submitted. The implementation of the visualisation is discussed further in section [TODO].
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{argumentationOutput.png}
+    \caption{Derivation Tree panel.}
+    \label{fig:arg_tree}
+\end{figure}
 
 \section{Building a Context Free Grammar for the input of the web application.}
 
 We formally defined a Context Free Grammar for the expected user input and built a parser for it. An example of a valid input is given in [TODO].
 
-[TODO] - Add example of input.
+\begin{Verbatim}[frame=single]
+
+asm(a(X),q(X)){X=1,2;}.
+asm(b(X),f(X)){X=1,2;}.
+asm(c(X),u(X)){X=1,2;}.
+asm(d(X),v(X)){X=1,2;}.
+asm(e(X),v(X)){X=1,2;}.
+asm(f(X),v(X)){X=1,2;}.
+
+p(X)<-[a(X),u(X)].
+q(X)<-[b(X),r(X)].
+q(X)<-[c(X),s(X)].
+q(X)<-[c(X),t(X)].
+u(X)<-[a(X)].
+s(X)<-[]{X=1,2;}.
+t(X)<-[d(X)].
+t(X)<-[e(X)].
+
+\end{Verbatim}
 
 In section [TODO] we elaborate on the semantics of our input language, along with how the parser forced the validity of the user's input.
 
@@ -29,11 +61,20 @@ In section [TODO] we elaborate on the semantics of our input language, along wit
 
 We then extended the language to allow for the specification of a domain over which assumptions, contraries or rules of our framework are valid. In example [TODO] we see how the notation is used to define a domain and the viable variable values.
 
-[TODO] - ADD example.
+\begin{Verbatim}[frame=single]
+asm(a(X,Y),b(X)){X=1,2,3;Y=a,b;}.
+b(X)<-[]{X=1;}.
+\end{Verbatim}
 
-We also built a grounder that grounds the framework over the domain specified by the user. The grounder acts as a pre-processing step and allows us to generate the grounded version of our frame work as in example [TODO]
+We also built a grounder that grounds the framework over the domain specified by the user. The grounder acts as a pre-processing step and allows us to generate the grounded version of our framework as in example [TODO]
 
-[TODO] - grounder output program.
+\begin{Verbatim}[frame=single]
+asm(a(1,a),b(1)). asm(a(1,b),b(1)).
+asm(a(2,a),b(2)). asm(a(2,b),b(2)).
+asm(a(3,a),b(3)). asm(a(3,b),b(3)).
+
+b(1)<-[].
+\end{Verbatim}
 
 An overview of the impementation of the grounder is provided in section [TODO]
 
@@ -41,6 +82,45 @@ An overview of the impementation of the grounder is provided in section [TODO]
 
 Using the existing implementation of the admissible based dispute derivations in Proxdd, we introduced the necessary functionality that enables us to derive dispute derivations based on ideal semantics. This includes the introduction and correct updating of the ``F'' set , along with the implementation of the Fail(S) check as described in section [TODO]. An example of a successful dispute derivation under the ideal semantics is provided in example [TODO].
 
-[TODO] - Ideal example.
+\begin{framed}
+\begin{exmp} Consider the following assumption based framework:
+\\*
+
+\noindent\textbf{R} - includes the following rules:
+\\*
+
+\indent	z\textleftarrow a
+
+\indent z\textleftarrow b
+
+\indent y\textleftarrow a
+
+\indent x\textleftarrow d
+
+\indent v\textleftarrow c
+\\*
+
+\noindent\textbf{A} = \{a,b,c,d\} and $\bar{a} = z, \bar{b} = y, \bar{c} = x, \bar{d} = v$.
+
+\end{exmp}
+\end{framed}
+
+\clearpage
+
+\begin{table}[h]
+  \begin{center}
+    \begin{tabular}{cccccc}
+    \hline
+    Step & P     & O         & A     & C     & F         \\ \hline
+    1    & \{z\} & \{\}      & \{\}  & \{\}  & \{\}      \\
+    2    & \{b\} & \{\}      & \{b\} & \{\}  & \{\}      \\
+    3    & \{\}  & \{\{x\}\} & \{b\} & \{\}  & \{\}      \\
+    4    & \{z\} & \{\}      & \{b\} & \{a\} & \{\{a\}\} \\
+    5    & \{\}  & \{\}      & \{b\} & \{a\} & \{\{a\}\} \\
+    6    & \{\}  & \{\}      & \{b\} & \{a\} & \{\}      \\ \hline
+    \end{tabular}
+    \caption {Example of IB-derivation of example [TODO]}
+  \end{center}
+\end{table}
 
 The details of the implementation are explored in section [TODO].

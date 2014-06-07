@@ -8,11 +8,11 @@ A user of the application must be able to define an ABA framework from which he 
 
 When deciding on the input method there were several parameters that had to be considered. Some of the most important ones were:
 
-\begin{itemize*}
+\begin{itemize}
 \item It must be easy for the user to understand and use.
 \item Should be able to accommodate all the derivation engines implemented now and in the future.
 \item Should allow for the easy input of both large and small frameworks.
-\end{itemize*}
+\end{itemize}
 
 Having considered these factors, the input method chosen for the web application is a simple text input comprised of predetermined commands that can be interpreted by a parser to input the framework to the desired derivation engine.
 
@@ -24,16 +24,58 @@ Furthermore the input language suggested and implemented was designed to be as s
 
 \begin{itemize*}
 \item asm(a,b). used to define an assumption and its contrary.
-\item b(X) <- [a(X)]. used to define a rule.
+\item b(X) \textless - [a(X)]. used to define a rule.
 \end{itemize*}
 
 Additionally, the language we specified allows for the definition of a domain over each of the elements of the framework is valid. By combining this with the grounder described in section [TODO], we can define domain specific framework. This feature of our language also allows us to reduce the amount of lines of input the user has to enter in order to define a specific framework.
+
 
 \subsection{Formal definition of Input.}
 
 In order to be able to check the input for validity a formal definition must be followed. The Context Free Grammar for our input language is defined below in section [TODO].
 
-[TODO] FORMAL DEFINITION.
+\begin{verbatim}
+Context Free Grammar for Argumentation Web-Application.
+==========================================================
+
+S 
+=====
+StatList
+
+P
+=====
+StatList	-> <EoF>
+StatList	-> Stat Domain '.' StatList
+Stat		-> 'asm(' Atom ',' Atom ')'
+Stat		-> Atom '<-' '[' Terms ']'
+Terms		-> ''
+Terms		-> Atom Atoms
+Atoms		-> ''
+Atoms		-> ',' Atom Atoms
+Strings		-> ''
+Strings		-> ',' String Strings
+Atom		-> AtomName '(' String Strings ')'
+Domain		-> ''
+Domain		-> '{' Elem Elements '}'
+Elements	-> ''
+Elements	-> Elem Elements
+Elem		-> VarName '=' Value Values ';'
+Values		-> ''
+Values		-> ',' Value Values
+Value		-> [a-z0-9]+
+VarName		-> [A-Z]?[A-Za-z0-9]*
+AtomName	-> [a-z0-9]+
+String		-> [A-Za-z0-9]+
+
+t
+=====
+{'.','asm(',',',')','<-','','{','}','<EoF>','=',';','[A-Za-z0-9]+'}
+
+nt
+=====
+{StatList, Stat, Terms, Strings, String, Domain, Elements, Elem,
+Atom, AtomName,Atoms,Values,Value,VarName,AtomName}
+\end{verbatim}
 
 \section{Parsing in the input.}
 
@@ -50,7 +92,7 @@ As noted the input language specified has just two distinct commands that the us
 
 The input can be considered as a series of statements separated by the terminal character ``.''. Each statement specifies either an assumption with its contrary or a rule. Using these two commands interchangeably  the user can specify their argumentation framework. By keeping the language simple a simple parser can be created that checks whether each input statement is in one of the two forms.
 
-Once a statement is extracted it is mapped to one of the two cases using the unique identifier tokens ``asm('' or ``<-'', which are used to identify whether the user is specifying a rule or an assumption. The tokens were chosen to be easy to remember and reuse. The use of the ``<-'' operator in the rule definition is exceptionally memorable for users as it is the most common way in which rules are specified in the literature and it is a also a very commonly used operator in logic overall.
+Once a statement is extracted it is mapped to one of the two cases using the unique identifier tokens ``asm('' or ``\textless -'', which are used to identify whether the user is specifying a rule or an assumption. The tokens were chosen to be easy to remember and reuse. The use of the ``\textless -'' operator in the rule definition is exceptionally memorable for users as it is the most common way in which rules are specified in the literature and it is a also a very commonly used operator in logic overall.
 
 Due to the simple and strict nature of the language the parser created is simple in its implementation. It carries out the the following three tasks:
 
@@ -68,15 +110,44 @@ If the parser manages to parse the whole of the input successfully, then by the 
 
 \subsection{Verifying the correctness of the input.}
 
-One of the key purposes of the parser is not only to interpret the input, but also to verify whether it is valid. Due to the limited amount of statements that are considered valid and the simple linear structure of an input (list of statements) we can simply compare each statement against a mask created using a regular expression. Specifically the regular expressions are defined in [TODO].
+One of the key purposes of the parser is not only to interpret the input, but also to verify whether it is valid. Due to the limited amount of statements that are considered valid and the simple linear structure of an input (list of statements) we can simply compare each statement against a mask created using a regular expression. Specifically the regular expressions are defined in [TODO]. For simplicity and clarity we have isolated the regular expressions that checks terms and domains as these are repeated in the individual regex of the commands.
 
-[TODO] - Add regular expressions.
+\begin{Verbatim}[frame=single]
+Term
+====
+[a-z]?[A-Za-z0-9]+\([A-Z][A-Za-z0-9]*(,[A-Z][A-Za-z0-9]*)*\)
+
+Domain
+======
+(\{(([A-Z]+=[A-Za-z0-9])+(,[A-Za-z0-9])*;)+\})?
+
+Assumption
+==========
+asm\(Term,Term\) Domain	
+
+Fact
+====
+Term<-\[\] Domain
+
+Rule
+====
+Term<-\[Term(,Term)*\]
+
+\end{Verbatim}
 
 If a statement does not fit in these regular expressions then it is an invalid statement and the input in its entirety is considered as invalid. This strict approach to the input ensures that the user has not made any human error that would render it invalid.
 
 \subsection{Forcing the existence of a contrary.}
 
 ABA frameworks themselves have certain rules by which they must adhere to. A common example, that is prone to human error when defining an ABA framework, is that a contrary must be defined for every assumption declared. Our suggested input language is constructed so as to force the user to declare the contrary upon defining a new assumption. This is done by incorporating the definition of a contrary in the declaration of an assumption, as shown in example [TODO].
+
+\begin{Verbatim}[frame=single]
+asm(a(X),b(X)){X=1,2,3;}.
+asm(b(X),c(X)){X=1,2,3;}.
+c(X)<-[d(X)].
+\end{Verbatim}
+
+In example [TODO] we see an example of a simple framework. We can also see that when defining an assumption using the \emph{asm(Term,Term)} command we are also forced to define a contrary to the assumption (the second term). This contrary can either be an assumption itself (as is the case with b(X)) or it can be the head of a rule (as is the case with c(X)).
 
 By forcing the user to define the contrary in the same step as declaring the assumption we ensure that there will always exist a contrary for an assumption. It should be noted that the current implementation restricts the user to defining only one contrary for each assumption. If the need arises in the future then the second term in the assumption command could be redesigned as a list that could specify more than one contraries for a single assumption.
 

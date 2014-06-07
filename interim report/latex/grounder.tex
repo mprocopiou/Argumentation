@@ -2,11 +2,15 @@
 
 \chapter{Grounding a framework over its domain.}
 
-As explained in previous sections the current implementation of the derivation engines of both Grapharg and Proxdd does not support the inputting of frameworks that include non-grounded elements. Consider example [TODO].
+As explained in previous sections the current implementation of the derivation engines of both Grapharg and Proxdd do not support the inputting of frameworks that include non-grounded elements. Consider example [TODO].
 
-[TODO] - Add example of non ground assumption.
+\begin{verbatim}
+	asm(likes(X,Y),dislikes(X,Y)).
+\end{verbatim}
 
-The use of assumptions and rules specific to a certain domain is very important when it comes to decision making as often enough assumptions and rules change depending the parameters of a situation. Unbounded variables to assumptions and rules cannot be handled and therefore we are forced with creating frameworks that are either valid towards just one specific domain or provide a general overview of what the expected outcome would be.
+This example illustrates the definition of an assumption ``likes'' which takes to parameters X and Y. This could be used to define a relationship by which we are assuming that ``john likes cheese'', this is represented by the assumption ``likes(john,cheese)''. In addition to this we also define the contrary to be ``dislikes(X,Y)'' which can be interpreted similarly to ``likes''. However, in our definition X and Y are variables and therefore our definition is not grounded. The variables X and Y can take any instances in a domain to represent the existence of the required relationships. By incorporating this feature we can then use the general ungrounded definition to define specific relationships occurring in our domain, such as everyone who ``likes cheese'' or even everyone who ``likes ham'' or any other ingredient.
+
+The use of assumptions and rules specific to a certain domain is very important when it comes to decision making as often enough assumptions and rules change depending on the parameters of a situation. Unbounded variables to assumptions and rules cannot be handled and therefore we are forced with creating frameworks that are either valid towards just one specific domain or provide a general overview of what the expected outcome would be.
 
 \section{The need of specifying a domain for a framework.}
 
@@ -42,7 +46,7 @@ The algorithm implemented is built based on the grounder algorithms used for DLV
 As specified the first step of our grounding process is to identify facts that definitely hold in our framework, ground them over the domain specified and add them to the EDB. This includes two special cases:
 
 \begin{itemize*}
-\item \emph{asm(a,b)\textbraceleft X=1,2,3; \textbraceright.} - once assumptions and contraries are defined then they must exist in the ABA framework as they are not reliant on the existence of other predicates.
+\item \emph{asm(a(X),b(X))\textbraceleft X=1,2,3; \textbraceright.} - once assumptions and contraries are defined then they must exist in the ABA framework as they are not reliant on the existence of other predicates.
 \item \emph{b(X)\textless- \textbraceleft X=1,2,3; \textbraceright.} - rules without a body are equivalent to \emph{b(X)\textless- true} and therefore again are not reliant on the existence of other predicates.
 \end{itemize*}
 
@@ -52,19 +56,181 @@ Once we have isolated the initial IDB we can now pre-process it and start workin
 
 Having established the dependency graph we now proceed by partitioning the graph into sub-programs. This is done by identifying strongly connected components (SCC) as defined in definition [TODO].	The dependency graphed is analysed using Tarjan's strongly connected component (see [TODO]) algorithm and the modules of our graph are identified and used to construct a new Component graph representing the program.
 
-With the modular dependency graph now constructed we must derive an ordering between the modules. The modules are placed into sorted list with the order being defined as in  [TODO]. This enables us to first instantiate the rules on which rules from the following modules depend on. Having done so we can minimise the amount of unnecessary rules that would be created as explained in [TODO].
+\begin{defn} A strongly connected component is defined as a partition of a graph such that it is a maximal subset of vertices, such that every vertex is reachable by every other vertex.
+\end{defn}
+
+With the modular dependency graph now constructed we must derive an ordering between the modules. The modules are placed into sorted list with the order being defined as in [TODO]. This enables us to first instantiate the rules on which rules from the following modules depend on. Having done so we can minimise the amount of unnecessary rules that would be created as explained in [TODO].
+
+\begin{defn} An admissible ordering between components is one such that:
+If A and B are components of our modularised graph G, then A precedes B if there exists a path from component A to component B.
+\end{defn}
+
+\begin{Verbatim}[frame=single]
+algorithm tarjan is
+  input: graph G = (V, E)
+  output: set of strongly connected components
+      (sets of vertices)
+
+  index := 0
+  S := empty
+  for each v in V do
+    if (v.index is undefined) then
+      strongconnect(v)
+    end if
+  end for
+
+  function strongconnect(v)
+    // Set the depth index for v to the smallest unused index
+    v.index := index
+    v.lowlink := index
+    index := index + 1
+    S.push(v)
+
+    // Consider successors of v
+    for each (v, w) in E do
+      if (w.index is undefined) then
+        // Successor w has not yet been visited; recurse on it
+        strongconnect(w)
+        v.lowlink  := min(v.lowlink, w.lowlink)
+      else if (w is in S) then
+        // Successor w is in stack S and hence in the 
+        // current SCC
+        v.lowlink  := min(v.lowlink, w.index)
+      end if
+    end for
+
+    // If v is a root node, pop the stack and generate an SCC
+    if (v.lowlink = v.index) then
+      start a new strongly connected component
+      repeat
+        w := S.pop()
+        add w to current strongly connected component
+      until (w = v)
+      output the current strongly connected component
+    end if
+  end function
+\end{Verbatim}
 
 Having completed the pre-processing stage we can now focus on instantiating the rules that represent our framework over the defined domain. This is carried out by the algorithms used for DLV (reference [TODO]) which are described in [TODO]. These instantiate the rules of one module at a time and work incrementally until all of the modules of the ordered list are processed. 
 
+\begin{Verbatim}[frame=single]
+Procedure Instantiate(P:Program; CG:ComponentGraph; 
+		var GP:GroundProgram)
+		
+	var S:SetOfAtoms, (C1,....,Cn): List of nodes of CG;
+	S = EDB(P);
+	GP := null;
+	/* admissible component sequence */	
+	(C1,....Cn) := OrderedNodes(CG);
+	for i = 1...n do InstantiateModule(P,Ci,S,GP);
+	
+Procedure InstantiateMethod(P: Program; C: SetOfPreficates;
+		var S: SetOfAtoms; var GP: GroundProgram)
+		
+	var NS:SetOfAtoms, dS:SetOfAtoms;
+	NS := null;
+	dS := null;
+	for each r in Exit(C,P) do 
+		InstantiateRule(r,S,dS,NS,GP);
+	do
+		dS := NS;
+		NS := null;
+		for each r in Recursive(C,P) do 
+			InstantiateRule(r,S,dS,NS,GP);
+		S := union(S,dS);
+	while NS != null	
+\end{Verbatim}
+
+\begin{Verbatim}[frame=single]
+Algorithm Instantiate
+Input R:Rule,I:Set of instances of predicates;
+Output S:Set of Total Substitutions;
+var L:Literal, B:List of Atoms, theta:Substitution,
+	MatchFound: Boolean;
+
+Begin
+	theta=null;
+	/* Returns ordered list of body literals */
+	B:=BodyToList(R);
+	L:=L1;
+	S:=null;
+	while L != null
+		Match(L,theta,MatchFound);
+		if MatchFound
+			if(L not Last) then
+				L:= NextLiteral(L);
+			else
+		  /* theta is substitution for variables */
+		  /* of R */
+				S:= union(S,theta);
+				L := PreviousLiteral(L);
+			 /* Look for other substitution */
+				MatchFound:= false;
+			 /* Bounded variables up to */
+			 /* previous literal */
+				theta:=PreviousVars(L);
+		else
+			L:=PreviousLiteral(L);
+			theta:=PreviousVars(L);
+	output S;
+end;
+\end{Verbatim}
+
 For every rule we instantiate it according to the matching algorithm as defined in [TODO]. This algorithm goes through the predicates of a rule and finds valid grounded substitutes of the predicate already existing on the EDB. If a match is found then that substitution of the rule is added to the grounded program and the EDB.
+
+\begin{Verbatim}[frame=single]
+Procedure Match(L:Literal, var theta:Substitution, 
+		var MatchFound:Boolean)
+begin
+	/* First try on new literal */
+	if MatchFound then 
+		FirstMatch(L,theta,MatchFound);
+	/* last match failed */
+	/* try other match on previous literal */
+	else
+		NextMatch(L,theta,MatchFound);	
+end;
+
+Procedure FirstMatch(L:Literal, var theta:Substitution,
+		var MatchFound:Boolean)
+	/* find first tuple of values matching theta*/
+	/* Update theta and if Match found set */
+	/* MatchFound to true else false */	
+		
+Procedure NextMatch(L:Literal, var theta:Substitution,
+		var MatchFound:Boolean)
+	/* Similar to FirstMatch by finds next match. */
+		
+\end{Verbatim}
 
 Once all the rules of all the modules have been processed we are now provided with the final grounded framework.
 
 \subsection{Advantages of implementation.}
 
-An easier to implement and more primitive grounder could simply compute all possible values for each variable in our framework and then build a dictionary of these values. This dictionary would then be used to create the grounded rules using all possible combinations of values for the unbounded variables. Nonetheless, this could create an explosion to the size of the framework that might be unnecessary. Consider the following example:
+An easier to implement and more primitive grounder could simply compute all possible values for each variable in our framework and then build a dictionary of these values. This dictionary would then be used to create the grounded rules using all possible combinations of values for the unbounded variables. Nonetheless, this could create an explosion to the size of the framework that might be unnecessary. Consider the following example, although the ungrounded framework is just 2 commands we can see this is multiplied manifold once groudned.
 
-[TODO] - Example of explosion. Assumption with 
+\begin{Verbatim}[frame=single]
+Ungrounded framework
+====================
+asm(a(X),b(X)){X=1,2,3,4,5,6,7,8,9;}.
+c(X)<-[a(X)].
+
+Grounded framework
+==================
+asm(a(1),b(1)). asm(a(2),b(2)).
+asm(a(3),b(3)). asm(a(4),b(4)).
+asm(a(5),b(5)). asm(a(6),b(6)).
+asm(a(7),b(7)). asm(a(8),b(8)).
+asm(a(9),b(9)).
+
+c(1)<-[a(1)]. c(2)<-[a(2)].
+c(3)<-[a(3)]. c(4)<-[a(4)].
+c(5)<-[a(5)]. c(6)<-[a(6)].
+c(7)<-[a(7)]. c(8)<-[a(8)].
+c(9)<-[a(9)].
+\end{Verbatim}
+
+As the number of commands increases and the size of the domain becomes larger the explosion of commands can only become worse.
 
 By implementing a smarter grounded we can avoid the generation of rules that are not achievable. If a rule is made up of predicates that are not valid over the domain specified then the rule is not constructed in the final grounded framework. This allows us to restrict our framework only to rules that could be valid and useful. This also provides a performance boost to the derivation engines as the framework provided for analysis is smaller.
 
@@ -74,4 +240,10 @@ Grounders are an extensive research area especially when it comes to creating hi
 
 Additionally, the current grounder is restricted in when it comes to the input it accepts. Although it serves the formal input language defined it would require additional development to be used in other cases or if the formal language is extended. The most notable limitation of our grounder is its inability to accommodate negative predicates, as in exampe [TODO]. However, in the ABA frameworks we are analysing negative predicates are not often encountered in the body of a rule.
 
+\begin{Verbatim}[frame=single]
+asm(a(X),b(X)){X=1,2,3;}.
+c(X,Y)<-[a(X),not a(Y)].
+\end{Verbatim}
+
+In the above example we can see the use of a negative predicate (using the not operator) which acts as the negations of the predicate. With the current implementation the grounder does not handle negative predicates in this manner. To do so the derivation of the ordering of the modules must change to accommodate such cases. However in ABA these are very isolated instances.
 \section{Example of expected output.}

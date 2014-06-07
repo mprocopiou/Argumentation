@@ -61,16 +61,54 @@ Lastly, the general design and colour scheme used for the web application was de
 [TODO] - Add image of after.
 
 \section{Evaluating the Grounder.}
+Ensuring the validity of the grounder is important in ensuring the validity of the whole system. As a preprocessing step, if this is not carried out correctly then we risk passing to the derivation engine wrong or even invalid input. Therefore, we need to ensure the robustness of our grounding mechanism with both large and small frameworks. Specifically during the evaluation process for the grounder we seeked to verify the following:
+
+\begin{itemize}
+\item Correct Grounding of frameworks over their domain.
+\item Robustness when dealing with large scale frameworks.
+\item Satisfying performance for our grounder.
+\end{itemize}
 
 \subsection{Checking validity through examples.}
+Initially we tested the grounder by running the examples we used to test the derivation engines in general, adapted however to include domains. This means that the example frameworks now have to be grounded first before they get provided to the derivation engine. By isolating the grounded we were able to provide the input for which we knew the expected output and then compare this to the actual output received. 
+
+There are three cases which we needed to check how they were grounded. These represent the three valid forms of the commands we can provide based on the language we have defined. These are:
+
+\begin{itemize}
+\item \emph{asm(a(X),b(X))} - This defines an assumption that exists on the domain specified by the user.
+\item \emph{a(X)\textless-[]} - This defines a fact. A fact is handled by the grounder similarly to assumptions.
+\item \emph{a(X)\textless-[b(X)]} - This defines a rule which can exist if the predicates in the detail exist in the global domain of our framework.
+\end{itemize}
+
+The examples we used had to accommodate and test all of these cases. Consider example [TODO] which is one of the examples used.
+
+[TODO] - Insert ungrounded and grounded examples.
+
+This way we ensured that the grounding was carried out successfully. 
 
 \subsection{Random Framework generator.}
+Later on in our evaluation of the grounder we explored the possibility of test running the grounder using large random frameworks. This would enable us to both check the validity of the grounder, but also to test its performance against frameworks of a larger scale.
 
 \subsubsection{How the random generator works.}
 
+However, creating such frameworks by hand is cumbersome and prone to errors. Therefore, we devised an algorithm for pseudo---random framework generations which is described in [TODO].
+
+[TODO] - Pseudo code for random framework generation.
+
 \subsubsection{Grounding large scale frameworks.}
 
+Having implemented this algorithm we were now able to create random frameworks and check whether they were grounded correctly. Additionally we used the generation of large frameworks to test the performance.
+
+Example [TODO] shows an example of the ungrounded framework and example [TODO] show the respective grounded framework. As the large scale frameworks would be hard to provide as part of this report, we take a smaller framework to be indicative of the process carried out with the larger frameworks as well. In these examples we consider a frameworks made up of approximately 20-30 commands.[TODO] check.
+
+[TODO] - add ungroundedn and grounded
+
+
 \subsection{Performance of Grounder.}
+
+[TODO] - Performance analysis.
+
+As explained in section [TODO] there are optimisation mechanism that can be implemented to improve the performance
 
 \section{Evaluating the ideal semantics implementation.}
 During the implementation of the project I also got the opportunity to work with the derivation engines directly. The aim was to extend the Proxdd derivation engine to be able to accommodate derivations based on ideal semantics as described in section [TODO].
