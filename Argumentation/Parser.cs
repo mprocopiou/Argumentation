@@ -294,7 +294,7 @@ namespace Parser
                     //string output = String.Format("myAsm({0}).\ncontrary({0},{1}).\n", assumption, contrary);
                     prologInput = prologInput + output;
                 }
-                else if (Regex.IsMatch(line, String.Format(@"{0}<-\[\]", termRegex) + @"(\{(([A-Z]+=[A-Za-z0-9])+(,[A-Za-z0-9])*;)+\})?"))
+                else if (Regex.IsMatch(line, String.Format(@"{0}<-\[\]", termRegex) + @"\{(([A-Z]+=[A-Za-z0-9])+(,[A-Za-z0-9])*;)+\}"))
                 {
                     string[] seperators = new string[] { @"<-", "[", "]", "{", "}" };
                     string[] tokens = line.Split(seperators, StringSplitOptions.RemoveEmptyEntries);
@@ -355,7 +355,7 @@ namespace Parser
 
         private static bool checkValidityOfClaim(Dictionary<string, HashSet<ProgramNode>> edb, List<ProgramNode> groundedProgram, string claim, out string error)
         {
-            Regex termRegex = new Regex(@"[a-z]?[A-Za-z0-9]+\([a-z0-9][A-Za-z0-9]*(,[a-z0-9][A-Za-z0-9]*)*\)");
+            Regex termRegex = new Regex(@"[a-z][A-Za-z0-9]+\([a-z0-9][A-Za-z0-9]*(,[a-z0-9][A-Za-z0-9]*)*\)");
             error = "";
             if (!termRegex.IsMatch(claim))
             {

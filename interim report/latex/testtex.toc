@@ -41,59 +41,64 @@
 \contentsline {subsection}{\numberline {4.3.1}Building a simple parser for the language.}{31}
 \contentsline {subsection}{\numberline {4.3.2}Verifying the correctness of the input.}{32}
 \contentsline {subsection}{\numberline {4.3.3}Forcing the existence of a contrary.}{33}
-\contentsline {section}{\numberline {4.4}Example of an input.}{33}
-\contentsline {chapter}{\numberline {5}Grounding a framework over its domain.}{34}
-\contentsline {section}{\numberline {5.1}The need of specifying a domain for a framework.}{35}
-\contentsline {section}{\numberline {5.2}Implementing a grounder.}{35}
-\contentsline {subsection}{\numberline {5.2.1}Description of the algorithm.}{36}
-\contentsline {subsection}{\numberline {5.2.2}Advantages of implementation.}{41}
-\contentsline {subsection}{\numberline {5.2.3}Disadvantages of implementation.}{42}
-\contentsline {section}{\numberline {5.3}Example of expected output.}{42}
-\contentsline {chapter}{\numberline {6}Implementing Ideal Semantics dispute derivations.}{43}
-\contentsline {section}{\numberline {6.1}Extending Proxdd to include ideal semantics.}{43}
-\contentsline {section}{\numberline {6.2}Implementing ideal semantics.}{44}
-\contentsline {subsubsection}{Updating the F set.}{44}
-\contentsline {subsubsection}{Carrying out the \emph {Fail(S)} check.}{46}
-\contentsline {subsubsection}{Adding the Ideal Semantics to Proxdd.}{47}
-\contentsline {section}{\numberline {6.3}Example of ideal derivation.}{49}
-\contentsline {chapter}{\numberline {7}Building a web application interfacing the derivation engines.}{50}
-\contentsline {section}{\numberline {7.1}Overview of the Solution.}{50}
-\contentsline {subsection}{\numberline {7.1.1}Client}{50}
-\contentsline {subsection}{\numberline {7.1.2}Server}{51}
-\contentsline {subsection}{\numberline {7.1.3}Derivation Engines}{51}
-\contentsline {section}{\numberline {7.2}User Interface with Application.}{51}
-\contentsline {subsection}{\numberline {7.2.1}Setting up the framework.}{52}
-\contentsline {subsection}{\numberline {7.2.2}Configuration of the engines.}{52}
-\contentsline {subsection}{\numberline {7.2.3}Visualisation the derivation tree.}{53}
-\contentsline {section}{\numberline {7.3}Server - Processing the Input.}{54}
-\contentsline {section}{\numberline {7.4}Server - Interfacing with the Prolog Engine.}{55}
-\contentsline {subsection}{\numberline {7.4.1}Need for an interface between C\# and Prolog Engines.}{55}
-\contentsline {subsection}{\numberline {7.4.2}Using the SwiPIC.dll library as an interface.}{56}
-\contentsline {section}{\numberline {7.5}Choosing the current implementation.}{56}
-\contentsline {subsection}{\numberline {7.5.1}Advantages of current implementation.}{57}
-\contentsline {subsection}{\numberline {7.5.2}Disadvantages of current implementation.}{57}
-\contentsline {subsection}{\numberline {7.5.3}Proposed alternative (Prolog Web Server).}{58}
-\contentsline {chapter}{\numberline {8}Evaluation of the System.}{60}
-\contentsline {section}{\numberline {8.1}Evaluating GUI Usability.}{60}
-\contentsline {subsection}{\numberline {8.1.1}User testing and feedback.}{60}
-\contentsline {subsection}{\numberline {8.1.2}Initial Concept.}{61}
-\contentsline {subsection}{\numberline {8.1.3}Changes to GUI.}{62}
-\contentsline {subsubsection}{Include ability to see grounded framework.}{62}
-\contentsline {subsubsection}{Tabulated sections.}{62}
-\contentsline {subsubsection}{Bootstrap based GUI.}{64}
-\contentsline {section}{\numberline {8.2}Evaluating the Grounder.}{64}
-\contentsline {subsection}{\numberline {8.2.1}Checking validity through examples.}{65}
-\contentsline {subsection}{\numberline {8.2.2}Random Framework generator.}{66}
-\contentsline {subsubsection}{How the random generator works.}{66}
-\contentsline {subsubsection}{Grounding large scale frameworks.}{67}
-\contentsline {subsection}{\numberline {8.2.3}Performance of Grounder.}{68}
-\contentsline {section}{\numberline {8.3}Evaluating the ideal semantics implementation.}{68}
-\contentsline {subsection}{\numberline {8.3.1}Testing in Swi---Prolog.}{68}
-\contentsline {subsubsection}{Testing updating of F set.}{69}
-\contentsline {subsubsection}{Testing Fail(S) derivations.}{69}
-\contentsline {subsubsection}{Testing the ideal based derivations as a whole.}{70}
-\contentsline {chapter}{\numberline {9}Conclusions}{71}
-\contentsline {section}{\numberline {9.1}What comes next?}{71}
-\contentsline {subsection}{\numberline {9.1.1}Building on top of the Web---Application.}{71}
-\contentsline {subsection}{\numberline {9.1.2}Real World Application.}{72}
-\contentsline {section}{\numberline {9.2}Concluding remarks.}{73}
+\contentsline {section}{\numberline {4.4}Error checking and feedback for user.}{33}
+\contentsline {subsection}{\numberline {4.4.1}Detecting an Invalid Statement.}{34}
+\contentsline {subsection}{\numberline {4.4.2}Validate form of user defined target.}{34}
+\contentsline {subsection}{\numberline {4.4.3}Validate the existence of a target in the grounded framework.}{35}
+\contentsline {subsection}{\numberline {4.4.4}Check if derivation for target was found.}{36}
+\contentsline {section}{\numberline {4.5}Example of an input.}{37}
+\contentsline {chapter}{\numberline {5}Grounding a framework over its domain.}{38}
+\contentsline {section}{\numberline {5.1}The need of specifying a domain for a framework.}{39}
+\contentsline {section}{\numberline {5.2}Implementing a grounder.}{39}
+\contentsline {subsection}{\numberline {5.2.1}Description of the algorithm.}{40}
+\contentsline {subsection}{\numberline {5.2.2}Advantages of implementation.}{45}
+\contentsline {subsection}{\numberline {5.2.3}Disadvantages of implementation.}{46}
+\contentsline {section}{\numberline {5.3}Example of expected output.}{46}
+\contentsline {chapter}{\numberline {6}Implementing Ideal Semantics dispute derivations.}{47}
+\contentsline {section}{\numberline {6.1}Extending Proxdd to include ideal semantics.}{47}
+\contentsline {section}{\numberline {6.2}Implementing ideal semantics.}{48}
+\contentsline {subsubsection}{Updating the F set.}{48}
+\contentsline {subsubsection}{Carrying out the \emph {Fail(S)} check.}{50}
+\contentsline {subsubsection}{Adding the Ideal Semantics to Proxdd.}{51}
+\contentsline {section}{\numberline {6.3}Example of ideal derivation.}{53}
+\contentsline {chapter}{\numberline {7}Building a web application interfacing the derivation engines.}{54}
+\contentsline {section}{\numberline {7.1}Overview of the Solution.}{54}
+\contentsline {subsection}{\numberline {7.1.1}Client}{54}
+\contentsline {subsection}{\numberline {7.1.2}Server}{55}
+\contentsline {subsection}{\numberline {7.1.3}Derivation Engines}{55}
+\contentsline {section}{\numberline {7.2}User Interface with Application.}{55}
+\contentsline {subsection}{\numberline {7.2.1}Setting up the framework.}{56}
+\contentsline {subsection}{\numberline {7.2.2}Configuration of the engines.}{56}
+\contentsline {subsection}{\numberline {7.2.3}Visualisation the derivation tree.}{57}
+\contentsline {section}{\numberline {7.3}Server - Processing the Input.}{58}
+\contentsline {section}{\numberline {7.4}Server - Interfacing with the Prolog Engine.}{59}
+\contentsline {subsection}{\numberline {7.4.1}Need for an interface between C\# and Prolog Engines.}{59}
+\contentsline {subsection}{\numberline {7.4.2}Using the SwiPIC.dll library as an interface.}{60}
+\contentsline {section}{\numberline {7.5}Choosing the current implementation.}{60}
+\contentsline {subsection}{\numberline {7.5.1}Advantages of current implementation.}{61}
+\contentsline {subsection}{\numberline {7.5.2}Disadvantages of current implementation.}{61}
+\contentsline {subsection}{\numberline {7.5.3}Proposed alternative (Prolog Web Server).}{62}
+\contentsline {chapter}{\numberline {8}Evaluation of the System.}{64}
+\contentsline {section}{\numberline {8.1}Evaluating GUI Usability.}{64}
+\contentsline {subsection}{\numberline {8.1.1}User testing and feedback.}{64}
+\contentsline {subsection}{\numberline {8.1.2}Initial Concept.}{65}
+\contentsline {subsection}{\numberline {8.1.3}Changes to GUI.}{66}
+\contentsline {subsubsection}{Include ability to see grounded framework.}{66}
+\contentsline {subsubsection}{Tabulated sections.}{66}
+\contentsline {subsubsection}{Bootstrap based GUI.}{68}
+\contentsline {section}{\numberline {8.2}Evaluating the Grounder.}{68}
+\contentsline {subsection}{\numberline {8.2.1}Checking validity through examples.}{69}
+\contentsline {subsection}{\numberline {8.2.2}Random Framework generator.}{70}
+\contentsline {subsubsection}{How the random generator works.}{70}
+\contentsline {subsubsection}{Grounding large scale frameworks.}{71}
+\contentsline {subsection}{\numberline {8.2.3}Performance of Grounder.}{73}
+\contentsline {section}{\numberline {8.3}Evaluating the ideal semantics implementation.}{73}
+\contentsline {subsection}{\numberline {8.3.1}Testing in Swi---Prolog.}{73}
+\contentsline {subsubsection}{Testing updating of F set.}{74}
+\contentsline {subsubsection}{Testing Fail(S) derivations.}{76}
+\contentsline {subsubsection}{Testing the ideal based derivations as a whole.}{78}
+\contentsline {chapter}{\numberline {9}Conclusions}{80}
+\contentsline {section}{\numberline {9.1}What comes next?}{80}
+\contentsline {subsection}{\numberline {9.1.1}Building on top of the Web---Application.}{80}
+\contentsline {subsection}{\numberline {9.1.2}Real World Application.}{81}
+\contentsline {section}{\numberline {9.2}Concluding remarks.}{82}

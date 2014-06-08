@@ -29,7 +29,6 @@ Furthermore the input language suggested and implemented was designed to be as s
 
 Additionally, the language we specified allows for the definition of a domain over each of the elements of the framework is valid. By combining this with the grounder described in section [TODO], we can define domain specific framework. This feature of our language also allows us to reduce the amount of lines of input the user has to enter in order to define a specific framework.
 
-
 \subsection{Formal definition of Input.}
 
 In order to be able to check the input for validity a formal definition must be followed. The Context Free Grammar for our input language is defined below in section [TODO].
@@ -150,6 +149,71 @@ c(X)<-[d(X)].
 In example [TODO] we see an example of a simple framework. We can also see that when defining an assumption using the \emph{asm(Term,Term)} command we are also forced to define a contrary to the assumption (the second term). This contrary can either be an assumption itself (as is the case with b(X)) or it can be the head of a rule (as is the case with c(X)).
 
 By forcing the user to define the contrary in the same step as declaring the assumption we ensure that there will always exist a contrary for an assumption. It should be noted that the current implementation restricts the user to defining only one contrary for each assumption. If the need arises in the future then the second term in the assumption command could be redesigned as a list that could specify more than one contraries for a single assumption.
+
+\section{Error checking and feedback for user.}
+The formally defined language we have established allows for the easy and clear declaration of a framework from a user, using the simple commands provided. We have already seen how the parser verifies that valid commands have been provided, however mechanisms must exist that help the user rectify mistakes they have done and aid them in establishing the validity of their input. The web application does so by providing feedback to the users about errors through useful error messages.
+
+\subsection{Detecting an Invalid Statement.}
+Firstly, we provide feedback when invalid statements are detected by the regular expressions explained in section [TODO]. When the user submits a framework input that includes commands that have not been matched to any of the regular expressions, then the web application recognises this and instead of moving on to grounding an invalid framework, it returns to the user feedback that allows them to correct their mistakes. This feedback is in the form of a list of errors notifying the user of the existence of the invalid commands, as shown in example [TODO].
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{inputErrors.png}
+    \caption{Invalid Statement notifications for the user.}
+    \label{fig:invalid_stats}
+\end{figure}
+
+\subsection{Validate form of user defined target.}
+Additionally, before processing the input the application also verifies that the user defined target is of valid form. This is done by verifying that the target matches a provided regular expressions. The regular expression is defined in [TODO].
+
+\begin{Verbatim}[frame=single]
+
+Target
+======
+[a-z]?[A-Za-z0-9]+\([a-z0-9][A-Za-z0-9]*
+			(,[a-z0-9][A-Za-z0-9]*)*\)
+
+\end{Verbatim}
+
+If the target specified does not match, then it is not of a valid form and the user should correct it. The user is notified of such error by the display of an alert message as shown in [TODO].
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{inputClaimInvalid.png}
+    \caption{Input Target is not in a valid format.}
+    \label{fig:invalid_claim}
+\end{figure}
+
+\subsection{Validate the existence of a target in the grounded framework.}
+Taking it a step further our web application's interpreter not only checks if the input of both the target and the framework are syntactically correct, but also provides feedback on whether the target defined is reasonable. Specifically, once the grounded framework has been established the web application then checks whether the target defined by the user exists in the grounded framework.
+
+The implementation searches among the grounded framework for an assumption statement or a rule statement that defines the user provided target. If no such rule exists then the target cannot possibly be reachable withing the current framework. Therefore, a derivation would not be possible.
+
+The user is notified of this case through an alert notification generated and displayed as shown in example [TODO].
+
+\clearpage
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{inputNotFramework.png}
+    \caption{Target specified does not exist in framework.}
+    \label{fig:not_in_frm}
+\end{figure}
+
+\subsection{Check if derivation for target was found.}
+
+Lastly, the system also runs a post-derivation check. This allows us to verify that a derivation has been found for the target once the framework has been processed by the derivation engine. Despite ensuring the validity of the framework and the existence of the target in the grounded framework, it might still be the case that there is no valid derivation for the target under the semantics specified.
+
+This is a perfectly reasonable outcome. Failure to find a solution under specific semantics does not imply that a mistake is made, but rather that no solution is possible to the problem specified. Therefore, it is useful for the user to be informed of this case, as is done in example [TODO].
+
+\clearpage
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{inputSolNotFound.png}
+    \caption{Derivation for target was not found.}
+    \label{fig:sol_not_found}
+\end{figure}
 
 \section{Example of an input.}
 
