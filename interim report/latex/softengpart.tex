@@ -116,19 +116,19 @@ On the client side the JSON is processed and the derivation tree it represents i
     \centering
     \includegraphics[width=0.8\textwidth]{argumentationTree.png}
     \caption{Visualisation of output as derivation tree.}
-    \label{fig:arg_tree}
+    \label{fig:arg_tree_soft}
 \end{figure}
 
 \section{Server - Processing the Input.}
 
 Once the user specifies the framework it then has to be passed to the server to be processed. Within the server several steps take place concerning the processing of the framework. These allow the interpretation of the input and the generation of the corresponding input for the engine. These steps include:
 
-\begin{itemize*}
+\begin{itemize}
 \item Parsing the Input and seperating the various elements (as described in [TODO]).
 \item Checking the validity of the input (as described in [TODO]).
 \item Grounding the input over a certain domaind (as desribed in [TODO]).
 \item Generating the derivation engines input (as described in [TODO]).
-\end{itemize*}
+\end{itemize}
 
 Due to the modularity of the web application it is possible that new derivation engines could be added to the back-end by implementing alternative to these steps. For example, if a new engine is added than by switching to a different generator we can now use the parsed and grounded input to create an input viable for the new derivation engine.
 
@@ -140,11 +140,11 @@ Both Proxdd and Grapharg are implemented in the Prolog programming language whic
 
 The following decision choices were all possible:
 
-\begin{itemize*}
+\begin{itemize}
 \item Re-implementing both Proxdd and Grapharg in C\#
 \item Using an external library that provides an interface for C\# with Prolog.
 \item Implementing the back-end of the web application in Prolog.
-\end{itemize*}
+\end{itemize}
 
 Nonetheless, for reasons explained in more detail in section [TODO] the use of an external library seemed to be the most reasonable choice. The interface allows for seamless integration of Prolog and C\#. Additionally, it enables us to focus most of the development work in a programming framework that is more popular and extendible than Prolog.
 

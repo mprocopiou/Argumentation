@@ -34,14 +34,17 @@ Building on the feedback from out test users we proceeded to evaluate possible a
 \subsubsection{Include ability to see grounded framework.}
 For the more technical users access to the grounded framework can be a desirable feature. The user can look over the grounded framework and review it. This allows users to find other suitable targets they can get a derivation for and can also evaluate whether certain rules or assumptions exist as under the domain they specified.
 
-[TODO] - ADD IMAGE OF GROUNDED FRAMEWORK.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{argumentationGrounded.png}
+    \caption{Example of the panel displaying the grounded framework.}
+    \label{fig:arg_grounded}
+\end{figure}
 
 As shown in figure [TODO] the output is in a format almost identical to the format the user used ton define the framework in the first place. Additionally, when grounding a framework over an extensive domain it is expected that there might be a significant increase in the number of rule and assumption definitions. Therefore, the window provided is both scrollable and resizeable. Furthermore it is also read---only to avoid any tampering with the grounded framework.
 
 \subsubsection{Tabulated sections.}
 Following from the feedback gathered that described the initial interface as over---cluttered and confusion, we separated the sections in easily reachable and distinct panels that each serves a specific purpose. The section are:
-
-[TODO] check and rename items if needed.
 
 \begin{itemize}
 \item Input Configuraion.
@@ -51,7 +54,26 @@ Following from the feedback gathered that described the initial interface as ove
 
 All the tabs exist in the same session and switching between tabs is handled client---side by selecting the appropriate section from the navigation panel on the left as shown in image [TODO]. This allows for easy and simple navigation between the various aspects of the web application. It also provides the users with ability to change the input framework and the configurations on the fly.
 
-[TODO] Add images showing tabs.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{argumentationInputFull.png}
+    \caption{The input configuration tab.}
+    \label{fig:arg_input_tab}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{argumentationGrounded.png}
+    \caption{The grounded framework tab.}
+    \label{fig:arg_grounded_tab}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{argumentationTree.png}
+    \caption{The derivation tree tab.}
+    \label{fig:arg_tree_tab}
+\end{figure}
 
 \subsubsection{Bootstrap based GUI.}
 Lastly, the general design and colour scheme used for the web application was deemed uncreative and dull. Therefore, to ensure a better user experience and to instill faith in the system's capabilities the user interface was re---designed to a more polished---up look. This was done using a popular tool that allows for the creation of good looking web application and websites called Bootstrap. Although the underlying functionalities of the web application are exactly the same, the final looked received better feedback from users, who now seemed more confident using the systems. The difference can be seen in figures [TODO] and [TODO].
@@ -82,7 +104,30 @@ There are three cases which we needed to check how they were grounded. These rep
 
 The examples we used had to accommodate and test all of these cases. Consider example [TODO] which is one of the examples used.
 
-[TODO] - Insert ungrounded and grounded examples.
+\begin{Verbatim}[frame=single]
+b(X,A)<-[a(X,A)].
+asm(a(X,Y),d(Y)){X=1,2;Y=2,3;}.
+c(X,Y,Z)<-[]{X=1,3;Y=2,3;Z=Michael,John;}.
+\end{Verbatim}
+
+\begin{Verbatim}[frame=single]
+asm(a(1,2),d(2)).
+asm(a(2,2),d(2)).
+asm(a(1,3),d(3)).
+asm(a(2,3),d(3)).
+c(1,2,Michael)<-[].
+c(3,2,Michael)<-[].
+c(1,3,Michael)<-[].
+c(3,3,Michael)<-[].
+c(1,2,John)<-[].
+c(3,2,John)<-[].
+c(1,3,John)<-[].
+c(3,3,John)<-[].
+b(2,3)<-[a(2,3)].
+b(1,3)<-[a(1,3)].
+b(2,2)<-[a(2,2)].
+b(1,2)<-[a(1,2)].
+\end{Verbatim}
 
 This way we ensured that the grounding was carried out successfully. 
 
@@ -94,6 +139,57 @@ Later on in our evaluation of the grounder we explored the possibility of test r
 However, creating such frameworks by hand is cumbersome and prone to errors. Therefore, we devised an algorithm for pseudo---random framework generations which is described in [TODO].
 
 [TODO] - Pseudo code for random framework generation.
+\begin{Verbatim}[frame=single]
+Procedure genRandFramework()
+	int[] domainA
+	int[] domainB
+	Dictionary assumCont
+	Queue assumQ
+	Queue ruleQ
+	List framework
+	List frameworkAssums
+	List frameworkRules
+	List startSymbols = getStartList()
+	List availableSymbols = startSymbols
+	
+	ruleQ.Enqueue("a")
+	
+	while( (assumQ and ruleQ not empty) 
+			and availableSymbols not empty)
+		if(assumQ not empty)
+			assum = createAsm(assumQ.Dequeue,
+				startSymbols,assumCont)
+			frameworkAssums.Add(assum)
+		else
+			rule = createRule(ruleQ.Dequeue,
+				availableSymbols,assumQ,ruleQ)
+			frameworkRules.Add(rule)
+			
+	foreach assumption in frameworkAssums
+		framework.Add(assumption)
+	
+	foreach rule in frameworkRules
+		framework.Add(rule)
+end
+		
+Procedure createAsm(id,startSymbols,assumCont)
+	/* Pick Random Contrary from startSymbols */
+	/* Randomly choose between possible domains */
+	/* Add assumption and contrary pair to Dictionary */
+	/* Construct assumption and return */
+end
+
+Procedure createRules(id,availableSymbols,assumQ,ruleQ)
+	/* Randomly choose number of terms in rule's */
+	/* tail (between 1-4) */
+	/* Randomly pick terms's Ids from availableSymbols */
+	/* and remove from availableSymbols */
+	/* Randomly add each of the tail terms to either */
+	/* assumQ or ruleQ */
+	/* Construct Rule and return */
+end
+
+\end{Verbatim}
 
 \subsubsection{Grounding large scale frameworks.}
 
