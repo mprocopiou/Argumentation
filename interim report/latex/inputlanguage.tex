@@ -219,4 +219,63 @@ This is a perfectly reasonable outcome. Failure to find a solution under specifi
 
 To illustrate a valid input corresponding to a valid ABA framework the following example is provided [TODO].
 
-[TODO] - Add input example and formal definition of corresponding framework.
+\begin{framed}
+\begin{exmp} Consider a ABA framework as follows:
+\\*
+
+\noindent\textbf{R} - includes the following rules:
+\\*
+
+\indent	z\textleftarrow a
+
+\indent z\textleftarrow b
+
+\indent y\textleftarrow a
+
+\indent x\textleftarrow d
+
+\indent v\textleftarrow c
+\\*
+
+\noindent\textbf{A} = \{a,b,c,d\} and $\bar{a} = z, \bar{b} = y, \bar{c} = x, \bar{d} = v$.
+
+\end{exmp}
+\end{framed}
+
+The user can input the framework  above into the web application using the formally defined input language. This can be done be providing the representative list of commands that represent this framework. The input required is provided in section [TODO]. Note that the input provided is in propositional logic and represents an already grounded framework. This is done for readability and the handling of ungrounded frameworks and variables are elaborated on in secton [TODO]. 
+
+[TODO] CHECK THAT THE GROUNDED UNGROUNDED THING IS VALID AT END!
+
+\begin{Verbatim}[frame=single]
+asm(a,z).
+asm(b,y).
+asm(c,x).
+asm(d,v).
+
+z <- [a].
+z <- [b].
+y <- [a].
+x <- [d].
+v <- [c].
+\end{Verbatim}
+
+The input can be provided to the web application through the user interface and the ``Input Framework'' section. This is discussed further in section [TODO], however for illustrative purposes please refer to [TODO] on how this would be achieved.
+
+[TODO] - Image of inputting framework in app.
+
+The user has successfully inserted their framework in the desired format and has additionally declared a valid target. By clicking the ``Submit'' button the input configuration provided is submitted and, provided no error have been found, the web application starts the required procedures to find a valid derivation of the target.
+
+In the case where users desire to specify a domain over which the framework is valid, they can you our language's support of such a case and adapt their commands accordingly. For example consider the framework defined in [TODO], but this time we also want to define the domain over which it is valid (X=1,2). The input to the web application would now be as in [TODO], were we can see the domain being defined in the format \{X=1,2;\} as specified by our formal language.
+
+\begin{Verbatim}[frame=single]
+asm(a(X),z(X)){X=1,2;}.
+asm(b(X),y(X)){X=1,2;}.
+asm(c(X),x(X)){X=1,2;}.
+asm(d(X),v(X)){X=1,2;}.
+
+z(X) <- [a(X)].
+z(X) <- [b(X)].
+y(X) <- [a(X)].
+x(X) <- [d(X)].
+v(X) <- [c(X)].
+\end{Verbatim}

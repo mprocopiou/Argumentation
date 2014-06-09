@@ -246,4 +246,68 @@ c(X,Y)<-[a(X),not a(Y)].
 \end{Verbatim}
 
 In the above example we can see the use of a negative predicate (using the not operator) which acts as the negations of the predicate. With the current implementation the grounder does not handle negative predicates in this manner. To do so the derivation of the ordering of the modules must change to accommodate such cases. However in ABA these are very isolated instances.
+
 \section{Example of expected output.}
+
+To demonstrate the use of our grounder we will use the example of a simple family tree. Consider the following family tree which goes back three generations [TODO].
+
+[TODO] - Add simple family tree.
+
+Our aim is to establish is to demonstrate the ability of the grounder to ground framework by finding valid relationships using global relationships such as ``parent'' and ``grandparent'' over a specific domain (this family). Essentially we need to establish the following two relationships that exist in our family tree.
+
+[TODO] - add frame.
+
+parent(X,Y) - this implies that X is a parent of Y.
+grandparent(X,Y) - this implies that X is a grandparent of Y.
+
+The framework can be converted to a series of commands that allow for the definition of the family we are trying to represent in our framework. These commands are included in section.
+
+\begin{Verbatim}[frame=single]
+
+asm(parent(X,Y),notparent(X,Y))
+		{X=andy,beth;Y=fiona,eleanor;}
+asm(parent(X,Y),notparent(X,Y))
+		{X=cal,doris;Y=gary,helen;}
+asm(parent(X,Y),notparent(X,Y))
+		{X=fiona,gary;Y=ian,jake,ken;}
+
+grandparent(X,Z) <- [parent(X,Y),parent(Y,Z)].
+
+\end{Verbatim}
+
+The objective of the grounder here is to use the knowledge we have defined concerning the ``parent'' relationships and ground the framework. In our example this will become visible as the grounder will derive the ``grandparent'' relationship that are viable based on the domain we have specified. Therefore, by grounding the framework over the domain using our grounder we can get the output shown in [TODO].
+
+\begin{Verbatim}[frame=single]
+asm(parent(andy,fiona),notparent(andy,fiona)).
+asm(parent(beth,fiona),notparent(beth,fiona)).
+asm(parent(andy,eleanor),notparent(andy,eleanor)).
+asm(parent(beth,eleanor),notparent(beth,eleanor)).
+asm(parent(cal,gary),notparent(cal,gary)).
+asm(parent(doris,gary),notparent(doris,gary)).
+asm(parent(cal,helen),notparent(cal,helen)).
+asm(parent(doris,helen),notparent(doris,helen)).
+asm(parent(fiona,ian),notparent(fiona,ian)).
+asm(parent(gary,ian),notparent(gary,ian)).
+asm(parent(fiona,jake),notparent(fiona,jake)).
+asm(parent(gary,jake),notparent(gary,jake)).
+asm(parent(fiona,ken),notparent(fiona,ken)).
+asm(parent(gary,ken),notparent(gary,ken)).
+
+grandparent(doris,ken)<-[parent(doris,gary),parent(gary,ken)].
+grandparent(doris,jake)<-[parent(doris,gary),parent(gary,jake)].
+grandparent(doris,ian)<-[parent(doris,gary),parent(gary,ian)].
+grandparent(cal,ken)<-[parent(cal,gary),parent(gary,ken)].
+grandparent(cal,jake)<-[parent(cal,gary),parent(gary,jake)].
+grandparent(cal,ian)<-[parent(cal,gary),parent(gary,ian)].
+grandparent(beth,ken)<-[parent(beth,fiona),parent(fiona,ken)].
+grandparent(beth,jake)<-[parent(beth,fiona),parent(fiona,jake)].
+grandparent(beth,ian)<-[parent(beth,fiona),parent(fiona,ian)].
+grandparent(andy,ken)<-[parent(andy,fiona),parent(fiona,ken)].
+grandparent(andy,jake)<-[parent(andy,fiona),parent(fiona,jake)].
+grandparent(andy,ian)<-[parent(andy,fiona),parent(fiona,ian)].
+\end{Verbatim}
+
+The power of being able to specify a domain and essentially introducing first-order logic principles to ABA, is that the same framework can now be used to represent other families or can be extended to accommodate the growth of this family, by simply changing the variable values, rather than having to define new rules. The ``grandparent'' relationship is defined only once, but since it is a global relationship it is grounded over all viable instances, as can be seen in [TODO].
+
+This is just one example of a run of the grounder for further examples please refer to the evaluation section [TODO] that explains how the grounder as evaluated. Additionally, in section [TODO], we explain how the grounded framework is provided to the user from the web application for review purposes.
+

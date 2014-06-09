@@ -43,7 +43,7 @@
                                     <asp:TextBox runat="server" CssClass="form-control" ID="claim" />
                                 </div>
                                 <div class="col-lg-5">
-                                    <div class="alert alert-danger" id="SolutionNotFound" runat="server" visible="true">
+                                    <div class="alert alert-danger" id="SolutionNotFound" runat="server" visible="false">
                                         <asp:Label runat="server" ID="SolutionNotFoundText" Text="No Solution was found for the claim."></asp:Label>
                                     </div>
                                 </div>
